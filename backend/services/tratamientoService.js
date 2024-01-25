@@ -1,5 +1,5 @@
 const { encriptar_contrasenia } = require('../utils/encryptPassword');
-const tratamientoQuerys = require('../querys/tratamientoQuerys');  // 
+const tratamientoQuerys = require('../queries/tratamientoQuerys');  // 
 
 async function guardar_tratamiento(tratamiento) {
     try {

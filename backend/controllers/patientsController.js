@@ -1,9 +1,21 @@
-const pacienteService = require('../services/patientsService');
+const patientsService = require('../services/patientsService')
+
+async function listPatients(req, res) {
+  try {
+    const result = await patientsService.listPatients()
+    if (result.error) {
+      return res.status(result.status).json(result.message)
+    }
+    return res.status(200).json(result)
+  } catch (error) {
+    return res.status(500).json({ statusCodeValue: 500, error: error.message })
+  }
+}
 
 async function savePatient(req, res) {
   try {
     const patientData = req.body
-    const result = await pacienteService.savePatient(patientData)
+    const result = await patientsService.savePatient(patientData)
     if (result.error) {
       return res.status(result.status).json(result.message)
     }
@@ -23,7 +35,7 @@ async function actualizarPaciente(req, res) {
     const datosPaciente = req.body;
 
     // Llama al servicio para guardar el paciente en la base de datos
-    const resultado = await pacienteService.actualizarPaciente(datosPaciente);
+    const resultado = await patientsService.actualizarPaciente(datosPaciente);
 
     // Verifica si se produjo un error al guardar el paciente
     if (resultado.error) {
@@ -38,26 +50,10 @@ async function actualizarPaciente(req, res) {
   }
 }
 
-async function listarPaciente(req, res) {
-  try {
-    const resultado = await pacienteService.listarPaciente();
-
-    // Verifica si se produjo un error al guardar el paciente
-    if (resultado.error) {
-      return res.status(resultado.status).json(resultado.message);
-    }
-
-    // Si se guardó correctamente, devuelve una respuesta exitosa
-    return res.status(200).json(resultado);
-  } catch (error) {
-    return res.status(500).json({ statusCodeValue: 500, error: error.message });
-  }
-}
-
 async function verifyID(req, res) {
   try {
     const { patientID } = req.body
-    const isRegistered = await pacienteService.verifyID(patientID)
+    const isRegistered = await patientsService.verifyID(patientID)
     res.status(200).json({ registeredID: isRegistered, message: isRegistered ? 'La identificación ya está registrada.' : 'La identificación no está registrada.' })
   } catch (error) {
     console.error('Error al verificar la identificación del paciente:', error)
@@ -68,7 +64,7 @@ async function verifyID(req, res) {
 async function verifyEmail(req, res) {
   try {
     const { patientEmail } = req.body
-    const isRegistered = await pacienteService.verifyEmail(patientEmail)
+    const isRegistered = await patientsService.verifyEmail(patientEmail)
     res.status(200).json({ registeredEmail: isRegistered, message: isRegistered ? 'El correo ya está registrado.' : 'El correo no está registrado.' })
   } catch (error) {
     console.error('Error al verificar la identificación del paciente:', error)
@@ -77,8 +73,8 @@ async function verifyEmail(req, res) {
 }
 
 module.exports = {
+  listPatients,
   savePatient,
-  listarPaciente,
   actualizarPaciente,
   verifyID,
   verifyEmail

@@ -25,7 +25,7 @@ body {
   color: #004aad;
 }
 
-.hidden {
+.alert, .table {
   display: none;
 }
 

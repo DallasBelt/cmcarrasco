@@ -1,5 +1,73 @@
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', () => {
   let dataPatientID, dataMedicID, dataMedicSpecialty, medicSchedule, dataApptID, dataApptComments
+
+  const initDataTable = () => {
+    $('#appts-table').DataTable({
+      "columnDefs": [
+        { "orderable": false, "targets": [2, 3, 6, 7] }
+      ],
+      language: {
+        url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-MX.json',
+      }
+    })
+  }
+
+  const loadApptsIntoTable = () => {
+    fetch('http://localhost:3000/appointments/listAppointments')
+      .then(response => response.json())
+      .then(data => {
+        if (data) {
+          document.querySelector('#appts-table').style.display = 'table'
+          const table = document.querySelector('#appts-table-data')
+          while (table.firstChild) {
+            table.removeChild(table.firstChild)
+          }
+          const fragment = document.createDocumentFragment()
+          data.forEach(item => {
+            const medicID = item.id_medico
+            const patientID = item.id_paciente
+            const apptID = item.id_cita_medica
+            const apptDate = item.fecha.split('T')
+            const apptStartTime = `${item.hora_inicio}:00`
+            const apptEndTime = `${item.hora_fin}:00`
+            const medicSpecialty = item.especialidad
+            const patientFullName = `${item.primer_nombre} ${item.segundo_nombre} ${item.primer_apellido} ${item.segundo_apellido}`
+            const apptComments = item.observacion;
+            const row = document.createElement('tr')
+            row.innerHTML = `
+              <td>${apptID}</td>
+              <td>${apptDate[0]}</td>
+              <td>${apptStartTime}</td>
+              <td>${apptEndTime}</td>
+              <td>${medicSpecialty}</td>
+              <td>${patientFullName}</td>
+              <td>${apptComments}</td>
+              <td>
+                <div>
+                  <button type='button' class='btn btn-primary' id='edit-btn' data-bs-toggle='modal' data-bs-target='#appt-edit-modal' data-appt-id='${apptID}' data-appt-comments='${apptComments}' data-patient-id='${patientID}' data-medic-id='${medicID}' data-medic-specialty='${medicSpecialty}' >
+                    <i class='fa-solid fa-pen-to-square'></i>
+                  </button>
+                  <button type='button' class='btn btn-danger' id='del-appt-btn'>
+                    <i class='fa-solid fa-trash'></i>
+                  </button>
+                </div>
+              </td>
+            `
+            fragment.appendChild(row);
+          })
+          table.appendChild(fragment);
+          initDataTable()
+        } else {
+          document.querySelector('.alert').style.display = 'block'
+        }
+      })
+      .catch(error => {
+        console.error('Error en la solicitud de citas médicas:', error.message)
+        document.querySelector('.alert').style.display = 'block'
+      })
+  }
+  
+  loadApptsIntoTable()
 
   $('#create-appt-btn').click(function() {
     fetch('http://localhost:3000/paciente/listar')
@@ -21,8 +89,6 @@ $(document).ready(function () {
         console.error(error);
       });
   })
-  
-  loadApptsIntoTable();
 
   // Get medic schedule function
   function obtenerHorariosMedico(horarioDisponible) {
@@ -43,17 +109,6 @@ $(document).ready(function () {
       },
       body: JSON.stringify(data)
     };
-  }
-
-  function initDataTable() {
-    $('#appts-table').DataTable({
-      "columnDefs": [
-        { "orderable": false, "targets": [2, 3, 6, 7] }
-      ],
-      language: {
-        url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-MX.json',
-      }
-    })
   }
 
   // Load the schedule of the medic from the Appointments table in order to edit the appointment in the modal
@@ -258,58 +313,4 @@ $(document).ready(function () {
         console.error(error);
       });
   }
-  
-  // Load appointments
-  function loadApptsIntoTable() {
-    fetch('http://localhost:3000/appointment/get_appointments')
-      .then(response => response.json())
-      .then(data => {
-        if (data.length > 0) {
-          $('#appts-table').css('display', 'table')
-          $('#appts-table').DataTable().destroy();
-          $('#appts-table-data').empty();
-          const fragment = document.createDocumentFragment();
-          data.forEach(item => {
-            const medicID = item.id_medico;
-            const patientID = item.id_paciente;
-            const apptID = item.id_cita_medica;
-            const apptDate = item.fecha.split('T');
-            const apptStartTime = `${item.hora_inicio}:00`;
-            const apptEndTime = `${item.hora_fin}:00`;
-            const medicSpecialty = item.especialidad;
-            const patientFullName = `${item.primer_nombre} ${item.segundo_nombre} ${item.primer_apellido} ${item.segundo_apellido}`;
-            const apptComments = item.observacion;
-            const row = $(
-              `<tr>
-                <td>${apptID}</td>
-                <td>${apptDate[0]}</td>
-                <td>${apptStartTime}</td>
-                <td>${apptEndTime}</td>
-                <td>${medicSpecialty}</td>
-                <td>${patientFullName}</td>
-                <td>${apptComments}</td>
-                <td>
-                  <div>
-                    <button type='button' class='btn btn-primary' id='edit-appt-btn' data-bs-toggle='modal' data-bs-target='#appt-edit-modal' data-appt-id='${apptID}' data-appt-comments='${apptComments}' data-patient-id='${patientID}' data-medic-id='${medicID}' data-medic-specialty='${medicSpecialty}' >
-                      <i class='fa-solid fa-pen-to-square'></i>
-                    </button>
-                    <button type='button' class='btn btn-danger' id='del-appt-btn'>
-                      <i class='fa-solid fa-trash'></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>`
-            );
-            fragment.appendChild(row[0]);
-          });
-          $('#appts-table-data').append(fragment);
-          initDataTable()
-        } else {
-          $('.alert').css('display', 'block');
-        }
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }
-});
+})

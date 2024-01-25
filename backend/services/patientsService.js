@@ -1,7 +1,23 @@
-const usuarioService = require('./usuarioService');
-const utilitarios = require('../utils/generar_nombre_usuario');
-const pacienteQuerys = require('../querys/pacienteQuerys');
+const usuarioService = require('./usersService');
+const utilitarios = require('../utils/genUsername');
+const pacienteQuerys = require('../queries/pacienteQuerys');
 const mail = require('../utils/mailer');
+const db = require('../db')
+
+async function listPatients() {
+  try {
+    const patients = await db.any(`
+      SELECT * FROM paciente
+    `)
+
+    console.log(patients);
+
+    return patients;
+  } catch (error) {
+    console.error('Error al listar los pacientes:', error);
+    throw error; 
+  }
+}
 
 // Función para guardar un paciente
 async function savePatient(patient) {
@@ -85,16 +101,6 @@ async function actualizarPaciente(paciente) {
   }
 }
 
-async function listarPaciente() {
-  try {
-    const pacientes = await pacienteQuerys.listarPaciente();
-    console.log(pacientes.rows);
-    return pacientes;
-  } catch (error) {
-    console.error('Error al listar el paciente:', error);
-  }
-}
-
 async function verifyID(patientID) {
   try {
     const patient = await pacienteQuerys.verifyID(patientID)
@@ -116,8 +122,8 @@ async function verifyEmail(patientEmail) {
 }
 
 module.exports = {
+  listPatients,
   savePatient,
-  listarPaciente,
   actualizarPaciente,
   verifyID,
   verifyEmail

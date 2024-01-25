@@ -1,4 +1,4 @@
-const antecedenteQuerys = require('../querys/antecedenteQuerys');  // 
+const antecedenteQuerys = require('../queries/antecedenteQuerys');  // 
 
 
 async function guardar_antecedente(antecedente) {

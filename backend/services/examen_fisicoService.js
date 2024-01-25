@@ -1,4 +1,4 @@
-const examen_fisicoQuerys = require('../querys/examen_fisicoQuerys');  // 
+const examen_fisicoQuerys = require('../queries/examen_fisicoQuerys');  // 
 
 
 async function guardar_examen_fisico(examen_fisico) {

@@ -14,75 +14,17 @@ document.addEventListener('DOMContentLoaded', () => {
     })
   }
 
-  // const loadPatientsIntoTable = () => {
-  //   fetch('http://localhost:3000/paciente/listar')
-  //     .then(response => response.json())
-  //     .then(data => {
-  //       if (data.length > 0) {
-  //         $('#patients-table').css('display', 'table')
-  //         $('#patients-table').DataTable().destroy()
-  //         $('#patients-table-data').empty()
-  //         const fragment = document.createDocumentFragment()
-  //         data.forEach(item => {
-  //           userID = item.id_usuario
-  //           const patientID = item.cedula
-  //           const patientFirstName = `${item.primer_nombre} ${item.segundo_nombre}`
-  //           const patientLastName = `${item.primer_apellido} ${item.segundo_apellido}`
-  //           const patientCellPhone = item.telefono_movil
-  //           const patientEmail = item.correo
-  //           const patientAge = calcAge(item.fecha_nacimiento)
-  //           const patientMaritalStatus = item.estado_civil
-  //           const row = $(
-  //             `<tr>
-  //               <td>${patientID}</td>
-  //               <td>${patientFirstName}</td>
-  //               <td>${patientLastName}</td>
-  //               <td>${patientCellPhone}</td>
-  //               <td>${patientEmail}</td>
-  //               <td>${patientAge}</td>
-  //               <td>${patientMaritalStatus}</td>
-  //               <td>
-  //                 <div>
-  //                   <button type='button' class='btn btn-primary btn-sm' id='edit-patient-btn' data-bs-toggle='modal' data-bs-target='#patient-edit-modal' data-patient-id='${patientID}'>
-  //                     <i class='fa-solid fa-pen-to-square'></i>
-  //                   </button>
-  //                   <button type='button' class='btn btn-primary btn-sm' id='create-appt-btn' data-bs-toggle='modal' data-bs-target='#create-appt-modal'>
-  //                     <i class='fa-solid fa-calendar-plus'></i>
-  //                   </button>
-  //                   <button type='button' class='btn btn-danger btn-sm' id='del-patient-btn' data-user-id='${userID}'>
-  //                     <i class='fa-solid fa-trash'></i>
-  //                   </button>
-  //                 </div>
-  //               </td>
-  //             </tr>`
-  //           )
-  //           fragment.appendChild(row[0])
-  //         })
-  //         $('#patients-table-data').append(fragment);
-  //         initDataTable()
-  //       } else {
-  //         $('.alert').css('display', 'block')
-  //       }
-  //     })
-
-  //     .catch(error => {
-  //       console.error(error);
-  //     });
-  // }
-
   const loadPatientsIntoTable = () => {
-    fetch('http://localhost:3000/paciente/listar')
+    fetch('http://localhost:3000/patients/list')
       .then(response => response.json())
-      .then(data => {
-        const patientsTable = document.getElementById('patients-table')
-        const patientsTableData = document.getElementById('patients-table-data')
-  
-        if (data.length > 0) {
-          patientsTable.style.display = 'table'
-          patientsTableData.innerHTML = ''
-  
+      .then(data => { 
+        if (data) {
+          document.querySelector('#patients-table').style.display = 'table'
+          const table = document.querySelector('#patients-table-data')
+          while (table.firstChild) {
+            table.removeChild(table.firstChild)
+          }
           const fragment = document.createDocumentFragment()
-  
           data.forEach(item => {
             const userID = item.id_usuario
             const patientID = item.cedula
@@ -92,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const patientEmail = item.correo
             const patientAge = calcAge(item.fecha_nacimiento)
             const patientMaritalStatus = item.estado_civil
-  
             const row = document.createElement('tr')
             row.innerHTML = `
               <td>${patientID}</td>
@@ -104,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <td>${patientMaritalStatus}</td>
               <td>
                 <div>
-                  <button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#patient-edit-modal' data-patient-id='${patientID}'>
+                  <button type='button' class='btn btn-primary btn-sm' id='edit-btn' data-bs-toggle='modal' data-bs-target='#patient-edit-modal' data-patient-id='${patientID}'>
                     <i class='fa-solid fa-pen-to-square'></i>
                   </button>
                   <button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#create-appt-modal'>
@@ -116,22 +57,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
               </td>
             `
- 
             fragment.appendChild(row)
           })
-  
-          patientsTableData.appendChild(fragment);
-          initDataTable(); // Asegúrate de que la función initDataTable esté definida en tu código.
+          table.appendChild(fragment)
+          initDataTable()
         } else {
-          document.querySelector('.alert').style.display = 'block';
+          document.querySelector('.alert').style.display = 'block'
         }
       })
-      .catch(error => {
-        console.error(error);
-      });
-  };
+      .catch((error) => {
+        console.error('Error en la solicitud de pacientes:', error.message)
+        document.querySelector('.alert').style.display = 'block'
+      })
+  }  
   
-
   loadPatientsIntoTable()
 
   const calcAge = dobString => {
@@ -141,75 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const ageMS = new Date(age)
     return Math.abs(ageMS.getUTCFullYear() - 1970)
   }
-
-  // Create new patient
-  // $('#create-new-patient-form').submit(function(e) {
-  //   e.preventDefault()
-  //   let patientFirstName = $('#patient-first-name').val()
-  //   let patientMiddleName = $('#patient-middle-name').val()
-  //   let patientLastName1 = $('#patient-last-name-1').val()
-  //   let patientLastName2 = $('#patient-last-name-2').val()
-  //   let patientID = $('#patient-id').val()
-  //   let patientEmail = $('#patient-email').val()
-  //   let patientPhone = $('#patient-phone').val()
-  //   let patientDOB = $('#patient-dob').val()
-  //   let patientMaritalStatus =  $("select[name='patient-marital-status'] option:selected").text()
-  //   let patientPassword = $('#patient-id').val()
-  //   let patientAddress = $('#patient-address').val()
-  //   let patientData = {
-  //     primer_nombre: patientFirstName,
-  //     segundo_nombre: patientMiddleName,
-  //     primer_apellido: patientLastName1,
-  //     segundo_apellido: patientLastName2,
-  //     cedula: patientID,
-  //     correo: patientEmail,
-  //     telefono_movil: patientPhone,
-  //     fecha_nacimiento: patientDOB,
-  //     estado_civil: patientMaritalStatus,
-  //     contrasenia: patientPassword,
-  //     direccion: patientAddress
-  //   }
-
-  //   let requestOptions = {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json'
-  //     },
-  //     body: JSON.stringify(patientData)
-  //   };
-
-  //   fetch('http://localhost:3000/paciente/guardar', requestOptions)
-  //     .then(response => response.json())
-  //     .then(data => {
-  //       if(data.statusCodeValue !== 200){
-  //         Swal.fire({
-  //           title: '¡Paciente creado de manera exitosa!',    
-  //           text: data.body,                    
-  //           icon: 'success',
-  //           showConfirmButton: false,
-  //           timer: 3500
-  //         })
-  //         $('#patients-table').DataTable().destroy()
-  //         $('#patients-table-data').empty()
-  //         loadPatientsIntoTable()
-  //       } else {
-  //         Swal.fire({
-  //           title: 'Error en el registro',    
-  //           text: data.error,                    
-  //           icon: 'error',
-  //           showConfirmButton: true
-  //         })
-  //       }    
-  //     })
-  //     .catch(error => {
-  //       Swal.fire({
-  //         title: 'Error en el registro',
-  //         text: 'Error: ' + error.error,                        
-  //         icon: 'error',
-  //         showConfirmButton: true
-  //       })
-  //     });  
-  // })
 
   const isDuplicatedID = (patientID) => {
     return fetch('http://localhost:3000/paciente/verifyID', {
