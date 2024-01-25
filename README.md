@@ -1,2 +1,2 @@
 # cmcarrasco
-Web application for Carrasco Medical Center in Cuenca (Ecuador)
+Web application for Carrasco Medical Center
