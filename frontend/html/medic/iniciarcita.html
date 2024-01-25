@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans+Extra+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../Estilos/inicio.css">    
+    <link rel="stylesheet" href="../../Estilos/iniciarcita.css">
+    <script src="../../Javascript/sweet_alert.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <title>Iniciar Cita | CM Carrasco</title>
+</head>
+<body>
+    <div class="container-pr">
+        <nav class="nav">        
+            <ul class="list">
+                <li class="list-item">
+                    <img src="../../Imagenes/CM_Carrasco-logo.png" alt="logo" class="logo">
+                </li>
+                <li class="list-item">
+                    <div class="list-button">
+                        <img src="../../Imagenes/home_24px.png" alt="inicio" class="list-img">
+                        <a href="inicio.html" class="nav-link">Inicio</a>
+                    </div>                
+                </li>
+                <li class="list-item list-item-click">
+                    <div class="list-button list-button-click">
+                        <img src="../../Imagenes/citas.png" alt="citas" class="list-img">
+                        <a href="iniciarcita.html" class="nav-link">Citas</a>
+                        <img src="../../Imagenes/abajo.png" alt="desplegar" class="list-arrow">
+                    </div>    
+                    
+                    
+                    <ul class="list-show">
+                        <li class="list-inside">
+                            <a href="iniciarcita.html" class="nav-link nav-link-inside">Iniciar Cita</a>
+                        </li>
+                        <li class="list-inside">
+                            <a href="miscitas.html" class="nav-link nav-link-inside">Ver Citas</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="list-item list-item-click">
+                    <div class="list-button list-button-click">
+                        <img src="../../Imagenes/pacientes.png" alt="citas" class="list-img">
+                        <a href="mispacientes.html" class="nav-link">Mis Pacientes</a>
+                    </div>    
+                </li>
+                <li class="list-item">
+                    <div class="list-button">
+                        <img src="../../Imagenes/historial.png" alt="inicio" class="list-img">
+                        <a href="../medico/historialclinico.html" class="nav-link">Historial Clínico</a>
+                    </div>                
+                </li>
+                <li class="list-item">
+                    <div class="list-button">
+                        <img src="../../Imagenes/cerrar_sesion.png" alt="salir" class="list-img">
+                        <a href="#" class="nav-link" id="cerrar_sesion">Cerrar Sesión</a>
+                    </div>                
+                </li>
+                <!-- <li class="list-item list-item-click">
+                    <div class="list-button list-button-click">
+                        <img src="../../Imagenes/actividades.png" alt="citas" class="list-img">
+                        <a href="#" class="nav-link">Actividades</a>
+                        <img src="../../Imagenes/abajo.png" alt="desplegar" class="list-arrow">
+                    </div>                            
+                    <ul class="list-show">
+                        <li class="list-inside">
+                            <a href="#" class="nav-link nav-link-inside">Notificaciones</a>
+                        </li>
+                        <li class="list-inside">
+                            <a href="#" class="nav-link nav-link-inside">Recordatorios</a>
+                        </li>
+                    </ul>
+                </li> -->
+            </ul>
+        </nav>
+        <div class="container-sec">
+            <div class="barra">
+                <h3></h3>
+            </div>
+            <div class="info">
+                <h1 id="tituloIC">Iniciar Cita</h1>
+                <br>
+                <table id="tb-cita">
+                    <caption>Mis Citas</caption>
+                    <thead>
+                        <tr>
+                            <th>N° de Cita</th>
+                            <th>Fecha</th>
+                            <th>Hora Inicio</th>
+                            <th>Hora Fin</th>
+                            <th>Paciente</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+                <div style="text-align: center; margin-bottom: 1rem">
+                    <strong> <h1 id="tituloAtencion"> </h1> </strong>
+                    <p id="datosCita">  </p>
+                </div>
+
+                <div class="dt-personales" id="datosHC" style="display: none; margin-top: 0px">
+                    <div class="dt-encabezado">
+                        <h3>Registre los Datos Clínicos</h3>
+                    </div>
+                    <div class="dt-form">                           
+                        <div class="input-container a">
+                            <textarea type="text" name="motivo" class="input input1" id="inp-motivo-consulta" placeholder="a" disabled></textarea>
+                            <label for="" class="label">Motivo de consulta</label>
+                        </div>
+                        <div class="input-container b">
+                            <input type="text" name="evolucion" class="input input3" id="inp-evolucion" placeholder="a" disabled>
+                            <label for="" class="label">Evolución</label>
+                        </div>
+                        <div class="input-container c">
+                            <textarea type="text" name="diagnostico" class="input input4" id="inp-diagnostico" placeholder="a" disabled></textarea>
+                            <label for="" class="label">Diagnóstico</label>
+                        </div>                                                   
+                    </div>
+                    <div class="dt-encabezado">
+                        <h3>Registre los Antecedentes Clínicos</h3>
+                    </div>
+                    <div class="dt-form">                           
+                        <div class="input-container a">
+                            <textarea class="input input5" name="ant-alergico" id="inp-antecedente-alergico" placeholder="a" disabled></textarea>
+                            <label for="" class="label">Antecedente alérgico</label>
+                        </div>
+                        <div class="input-container b">
+                            <textarea class="input input6" name="ant-familiar" id="inp-antecedente-familiar" placeholder="a" disabled></textarea>
+                            <label for="" class="label">Antecedente familiar</label>
+                        </div>
+                        <div class="input-container c">
+                            <textarea class="input input7" name="ant-personal" id="inp-antecedente-personal" placeholder="a" disabled></textarea>
+                            <label for="" class="label">Antecedente personal</label>
+                        </div>
+                        <div class="input-container d">
+                            <textarea class="input input8" name="ant-quirurgico" id="inp-antecedente-quirurgico" placeholder="a" disabled></textarea>
+                            <label for="" class="label">Antecedente quirúrgico</label>
+                        </div>                                                   
+                    </div>
+                    <div class="dt-encabezado">
+                        <h3>Registre el Examen Físico</h3>
+                    </div>
+                    <div id="exFisico" class="dt-form" style="grid-template:'a b c d' 80px 'e f g h' 80px / 25% 25% 25% 25%;">
+                        <div class="input-container a">
+                            <label for="" class="">Estatura:    </label>
+                            <input class="" name="estatura" id="inp-estatura" placeholder="a" disabled />
+                            <select id="umestatura"> </select>
+                        </div>
+                        <div class="input-container b">
+                            <label for="" class="">Frecuencia respiratoria</label>
+                            <input class="" name="frec-respiratoria" id="inp-frec-respiratoria" placeholder="a" disabled/>
+                            <select id="umfrecuenciarespiratoria"> </select>
+                        </div>
+                        <div class="input-container c">
+                            <label for="" class="">Peso</label>
+                            <input class="" name="peso" id="inp-peso" placeholder="a" disabled/>
+                            <select id="umpeso"> </select>
+                        </div>
+                        <div class="input-container d">
+                            <label for="" class="">Presión arterial</label>
+                            <input class="" name="presion-arterial" id="presion-arterial" placeholder="a" disabled/>
+                            <select id="umpesoarterial"> </select>
+                        </div>
+                        <div class="input-container e">
+                            <label for="" class="">Pulso</label>
+                            <input class="" name="pulso" id="inp-pulso" placeholder="a" disabled/>
+                            <select id="umpulso"> </select>
+                        </div>
+                        <div class="input-container f">
+                            <label for="" class="">Temperatura</label>
+                            <input class="" name="temperatura" id="inp-temperatura" placeholder="a" disabled/>
+                            <select id="umtemperatura"> </select>
+                        </div>
+                        <div class="input-container g">
+                            <label for="" class="">Tipo sanguíneo</label>
+                            <textarea class="" name="tipo-sanguineo" id="inp-tipo-sanguineo" placeholder="a" disabled ></textarea>
+                        </div>
+                    </div>
+                    <div class="dt-encabezado">
+                        <h3>Registre el Tratamiento</h3>
+                    </div>
+                    <div class="dt-form">                           
+                        <div class="input-container a">
+                            <textarea class="input input16" name="duracion" id="inp-duracion" placeholder="a" disabled></textarea>
+                            <label for="" class="label">Duración</label>
+                        </div> 
+                        <div class="input-container b">
+                            <textarea class="input input17" name="tratamiento" id="inp-tratamiento" placeholder="a" disabled></textarea>
+                            <label for="" class="label">Tratamiento</label>
+                        </div>                        
+                        <div class="input-container c">
+                            <textarea class="input input18" name="medicacion" id="inp-medicacion" placeholder="a" disabled></textarea>
+                            <label for="" class="label">Medicacion</label>
+                        </div>                       
+                    </div>
+                </div>
+            </div>
+            <div class="buttons" id="botonesHC" style="display: none">
+                <button class="cancelarBtn" id="cancelarCita" disabled>Cancelar</button>
+                <button class="submitBtn" disabled>Registrar</button>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="../../Javascript/inicio.js"></script>
+<script src="../../Javascript/redirect-child.js"></script>
+<script src="../../Javascript/crearcita..js"></script>
+<script src="../../Javascript/logout-child.js"></script>
+</html>

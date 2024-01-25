@@ -1,0 +1,253 @@
+.info h1{
+    opacity: 1;
+    color: #010832;
+}
+
+table{
+    width: calc(100% - 80px);
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+caption{
+    height: 40px;
+    padding-top: 10px;    
+    color: #FFFFFF;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    word-spacing: 2.4px;
+    font-size: 20px;
+    background-color: #010832;
+}
+
+thead tr th{
+    height: 35px;
+    border-bottom: 1px solid #010832;
+}
+
+tbody tr td{
+    text-align: center;
+}
+
+tbody tr td p{
+    color: #134761;
+    cursor: pointer;
+    border-bottom: 1px solid #134761;    
+}
+
+
+.dt-personales, .dt-contacto{
+    width: 100%;
+    margin-top: 40px;
+}
+.dt-encabezado{
+    margin-left: 50px;
+    margin-right: 50px;
+    height: 50px;
+    background-color: #010832;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding-left: 10px;
+}
+.dt-encabezado h3{
+    letter-spacing: 1px;
+    word-spacing: 1px;
+    color: #FFFFFF;
+}
+
+.a{
+    grid-area: a;
+}
+.b{
+    grid-area: b;    
+}
+.c{
+    grid-area: c;    
+}
+.d{
+    grid-area: d;    
+}
+.e{
+    grid-area: e;    
+}
+.f{
+    grid-area: f;    
+}
+.g{
+    grid-area: g;    
+}
+
+/* .dt-form >*{border: 1px solid red;} */
+
+.dt-form{
+    background-color: #FFFFFF;
+    margin-left: 50px;
+    margin-right: 50px;
+    height: auto;
+    display: grid;
+    grid-template:
+    "a  a" 50px
+    "b  c" 50px
+    "d  d" 50px
+    "d  d" 50px / 50% 50%;
+    padding: 20px 40px;
+    /* box-shadow: 0 10px 25px rgba(92, 99, 105, .2); */
+    row-gap: 20px;
+    column-gap: 5px;
+}
+
+.input-container{
+    position: relative;
+    height: 50px;
+    width: 100%;
+}
+
+.d{
+    height: 100px;
+}
+
+textarea{
+    resize: none;
+}
+
+.d textarea{
+    height: 100px;
+}
+
+.dt-form .input-container input, .dt-form .input-container select, .dt-form .input-container textarea{
+    width: 100%;
+    padding-left: 10px;
+    padding-top: 10px;
+}
+
+.pl{
+    background-color: #EAEBEF;
+}
+
+
+.dt-personales .dt-form:nth-child(4){
+    grid-template:
+    "a  b"  100px   
+    "c  d"  100px / 50% 50%;
+}
+
+.dt-personales .dt-form:nth-child(4) .input-container textarea{
+    height: 100px;
+}
+
+.dt-personales .dt-form:nth-child(6){
+    grid-template: 
+    "a b c d"   50px
+    "e f g h"   50px / 25% 25% 25% 25% ;
+}
+.dt-personales .dt-form:nth-child(6) .input-container textarea{
+    height: 50px;
+}
+
+.dt-personales .dt-form:nth-child(8){
+    grid-template: 
+    "a b c" 50px / 33% 33% 33% ;
+}
+.dt-personales .dt-form:nth-child(6) .input-container textarea{
+    height: 50px;
+}
+
+.buttons{
+    width: calc(100% - 100px);
+    height: 60px;
+    margin-left: 50px;
+    margin-right: 50px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.submitBtn, .cancelarBtn {
+    padding-left: 40px;
+    padding-right: 40px;
+    letter-spacing: 2px;
+    height: 40px;
+    border: none;
+    background-color: #010832;
+    color: #FFFFFF;
+    cursor: pointer;
+    font-size: 16px;
+    transition: .3s;
+    -webkit-transition: .3s;
+    -moz-transition: .3s;
+    -ms-transition: .3s;
+    -o-transition: .3s;
+}
+
+.cancelarBtn{
+    background-color: #000000;
+    margin-right: 15px;
+}
+  
+.submitBtn:hover {
+    background-color: #134761;
+    transition: .3s;
+    -webkit-transition: .3s;
+    -moz-transition: .3s;
+    -ms-transition: .3s;
+    -o-transition: .3s;
+}
+
+.cancelarBtn:hover{
+    background-color: #FFFFFF;
+    transition: .3s;
+    -webkit-transition: .3s;
+    -moz-transition: .3s;
+    -ms-transition: .3s;
+    -o-transition: .3s;
+    color: #000000;
+    border: 1px solid #000000;
+}
+
+
+.input{    
+    position: absolute;
+    top: 0px;    
+    left: 0px;
+    height: 40px;
+    width: 375px;
+    border: 1px solid #b2b2b3;
+    font-size: 16px;
+    outline: none;
+    background: none;
+    z-index: 1;  
+}
+
+::placeholder {
+    color: transparent;
+}
+
+.label {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    padding: 0 4px;
+    background-color: #FFFFFF;
+    color: #b2b2b3;
+    font-size: 16px;
+    transition: 0.5s;
+    z-index: 0;
+}
+
+.input:focus + .label {
+    top: -7px;
+    left: 3px;
+    z-index: 10;
+    font-size: 14px;
+    font-weight: 600;
+    color: #010832;
+}
+
+.input:not(:placeholder-shown)+ .label {
+    top: -7px;
+    left: 3px;
+    z-index: 10;
+    font-size: 14px;
+    font-weight: 600;
+}
