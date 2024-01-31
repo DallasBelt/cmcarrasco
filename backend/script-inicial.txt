@@ -1,8 +1,0 @@
-// Usuario: admin@cmc.com
-// Contraseña: 1804416491
-
-INSERT INTO usuario(activo, contrasenia, correo, nombre_usuario, role_id)
-VALUES (true, '$2a$12$9reHaw8./BvdzW29Dm3IUeocP7sNpZCz50Ze2j8.Rrc6O.SBlmCcy', 'admin@cmc.com', 'Diego6491', 1);
-
-INSERT INTO admin(id_usuario, cedula, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, celular, correo)
-VALUES (1, '1804416491', 'Diego', 'Andrés', 'Lascano', 'Correa', '0983022434', 'admin@cmc.com');
