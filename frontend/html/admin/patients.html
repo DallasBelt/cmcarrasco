@@ -60,12 +60,12 @@
       <h3 class='m-0'>No existen pacientes!</h3>
     </div>
 
-    <button type='button' class='btn btn-primary mb-5' data-bs-toggle='modal' data-bs-target='#create-patient-modal'>
+    <button type='button' class='btn btn-primary mb-5' data-bs-toggle='modal' data-bs-target='#create-edit-patient-modal'>
       <i class='fa-solid fa-user-injured me-1'></i>Crear paciente
     </button>
 
     <!-- Create patient modal -->
-    <div class='modal fade' id='create-patient-modal' tabindex='-1' aria-labelledby='createpatientModalLabel' aria-hidden='true'>
+    <div class='modal fade' id='create-edit-patient-modal' tabindex='-1' aria-labelledby='createPatientModalLabel' aria-hidden='true'>
       <div class='modal-dialog modal-xl modal-dialog-scrollable'>
         <div class='modal-content'>
           <div class='modal-header'>
@@ -73,7 +73,7 @@
             <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
           </div>
           <div class='modal-body'>
-            <form class='px-4 pt-4 pb-0' id='create-new-patient-form'>
+            <form class='px-4 pt-4 pb-0' id='create-edit-patient-form'>
               <div class='d-flex gap-2 mb-3'>
                 <div>
                   <label for='patient-first-name' class='form-label'>Primer nombre</label>
@@ -133,7 +133,6 @@
           </div>                  
           <div class='modal-footer d-flex justify-content-between'>
             <p><span class='text-danger'>*</span>Campos obligatorios</p>
-            <!-- <button type='button' class='btn btn-primary' id='save-new-patient'><i class='fa-solid fa-floppy-disk me-1'></i>Guardar</button> -->
           </div>  
         </div>
       </div>
@@ -157,6 +156,7 @@
         </tbody>
       </table>
     </div>
+
   </main>
     
   <script src='https://code.jquery.com/jquery-3.7.1.min.js'></script>
