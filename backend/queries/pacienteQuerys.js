@@ -69,33 +69,7 @@ async function actualizarPaciente(paciente) {
   }
 }
 
-async function verifyID(patientID) {
-  try {
-    const query = 'SELECT * FROM paciente WHERE cedula = $1';
-    const values = [patientID];
-    const result = await pool.query(query, values);
-    return result.rows.length > 0 ? result.rows[0] : null;
-  } catch (error) {
-    console.error('Error al verificar la identificación del paciente:', error);
-    throw error;
-  }
-}
-
-async function verifyEmail(patientID) {
-  try {
-    const query = 'SELECT * FROM paciente WHERE correo = $1';
-    const values = [patientID];
-    const result = await pool.query(query, values);
-    return result.rows.length > 0 ? result.rows[0] : null;
-  } catch (error) {
-    console.error('Error al verificar el correo del paciente:', error);
-    throw error;
-  }
-}
-
 module.exports = {
   guardarPaciente,
   actualizarPaciente,
-  verifyID,
-  verifyEmail
 }
