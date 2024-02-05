@@ -16,7 +16,7 @@ const usersRoute = require('./routes/usersRoute');
 const { EncryptPassword } = require('./utils/encryptPassword');
 
 const corsOptions = {
-  origin: 'http://127.0.0.1:3001',
+  origin: 'http://localhost:3001',
   credentials: true, // Allow cookies
 };
 
