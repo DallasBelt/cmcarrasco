@@ -1,5 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
-  let dataPatientID, dataMedicID, dataMedicSpecialty, medicSchedule, dataApptID, dataApptComments
+  let dataPatientID;
+  let dataMedicID;
+  let dataMedicSpecialty;
+  let medicSchedule;
+  let dataApptID;
+  let dataApptComments;
 
   const initDataTable = () => {
     $('#appts-table').DataTable({
@@ -9,31 +14,33 @@ document.addEventListener('DOMContentLoaded', () => {
       language: {
         url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-MX.json',
       }
-    })
-  }
+    });
+  };
 
-  const loadApptsIntoTable = () => {
-    fetch('http://localhost:3000/appointments/listAppointments')
-      .then(response => response.json())
-      .then(data => {
-        if (data) {
-          document.querySelector('#appts-table').style.display = 'table'
-          const table = document.querySelector('#appts-table-data')
+  const loadApptsIntoTable = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/appointments/listAppointments', {
+        withCredentials: true
+      });
+      const data = response.data;
+      if (data) {
+        document.querySelector('#appts-table').style.display = 'table';
+          const table = document.querySelector('#appts-table-data');
           while (table.firstChild) {
             table.removeChild(table.firstChild)
           }
-          const fragment = document.createDocumentFragment()
+          const fragment = document.createDocumentFragment();
           data.forEach(item => {
-            const medicID = item.id_medico
-            const patientID = item.id_paciente
-            const apptID = item.id_cita_medica
-            const apptDate = item.fecha.split('T')
-            const apptStartTime = `${item.hora_inicio}:00`
-            const apptEndTime = `${item.hora_fin}:00`
-            const medicSpecialty = item.especialidad
-            const patientFullName = `${item.primer_nombre} ${item.segundo_nombre} ${item.primer_apellido} ${item.segundo_apellido}`
+            const medicID = item.id_medico;
+            const patientID = item.id_paciente;
+            const apptID = item.id_cita_medica;
+            const apptDate = item.fecha.split('T');
+            const apptStartTime = `${item.hora_inicio}:00`;
+            const apptEndTime = `${item.hora_fin}:00`;
+            const medicSpecialty = item.especialidad;
+            const patientFullName = `${item.primer_nombre} ${item.segundo_nombre} ${item.primer_apellido} ${item.segundo_apellido}`;
             const apptComments = item.observacion;
-            const row = document.createElement('tr')
+            const row = document.createElement('tr');
             row.innerHTML = `
               <td>${apptID}</td>
               <td>${apptDate[0]}</td>
@@ -52,22 +59,21 @@ document.addEventListener('DOMContentLoaded', () => {
                   </button>
                 </div>
               </td>
-            `
+            `;
             fragment.appendChild(row);
-          })
+          });
           table.appendChild(fragment);
-          initDataTable()
-        } else {
-          document.querySelector('.alert').style.display = 'block'
-        }
-      })
-      .catch(error => {
-        console.error('Error en la solicitud de citas médicas:', error.message)
-        document.querySelector('.alert').style.display = 'block'
-      })
-  }
+          initDataTable();
+      } else {
+      document.querySelector('.alert').style.display = 'block';
+    }
+    } catch (error) {
+      console.error('Error en la solicitud de citas médicas:', error);
+      document.querySelector('.alert').style.display = 'block';
+    }
+  };
   
-  loadApptsIntoTable()
+  loadApptsIntoTable();
 
   $('#create-appt-btn').click(function() {
     fetch('http://localhost:3000/paciente/listar')

@@ -130,4 +130,3 @@ dist
 .pnp.*
 backend/db.sql
 backend/initial-script.txt
-backend/node_modules/.package-lock.json

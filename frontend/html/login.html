@@ -12,28 +12,35 @@
   <title>Inicio de Sesión | Centro Médico Carrasco</title>
 </head>
 <body>
-  <div class='container'>
-    <div class='left'>
-      <div class='title'>
+  <div class='container d-flex align-items-center justify-content-center gap-5 my-4 main'>
+    <div class='d-flex flex-column w-75 left'>
+      <div class='mb-4 text-nowrap header'>
         <h2>Le damos la bienvenida</h2>
         <h1>Ingrese a su cuenta</h1>
       </div>
     
       <form>
-        <label for='email'>Correo electrónico</label>
-        <input type='email' name='email' id='email' required autofocus>
-        <label for='password'>Contraseña</label>
-        <input type='password' name='password' id='password' required>
-        <button type='submit'>Iniciar sesión</button>
+        <div class='mb-3'>
+          <label class='form-label' for='email'>Correo electrónico</label>
+          <input type='email' name='email' class='form-control' id='email' required autofocus autocomplete='email'>
+        </div>
+        <div class='mb-3'>
+          <label class='form-label' for='password'>Contraseña</label>
+          <input type='password' name='password' class='form-control' id='password' required>
+        </div>
+        <div class='d-grid mt-5'>
+          <button type='submit' class='btn btn-primary btn-lg'>Iniciar sesión</button>
+        </div>
       </form>
     </div>
   
-    <div class='right'>
-      <img src='../images/login.jpg'>
+    <div class='container img'>
+      <img src='../images/login.jpg' class='img-fluid'>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
   <script src='../javascript/login.js'></script>
 </body>
 </html>

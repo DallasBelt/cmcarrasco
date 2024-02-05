@@ -9,68 +9,16 @@ body {
   background-color: #FFF;
 }
 
-.container {
-	height: 100vh;
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-}
-
-.title {
-	margin-bottom: 40px;
-	color: #444;
-}
-
-form {
-	display: flex;
-	flex-direction: column;
-}
-
-label {
-	margin: 10px 0 5px 0;
-}
-
-input {
-	height: 50px;
-	padding-left: 10px;
-	font-size: 15px;
-	border: 1px solid #ebebeb;
-	outline: none;
-}
-
-input:focus {
-	border: 2px solid #032da3;
-}
-
-button {
-	border: none;
-	margin-top: 20px;
-	background-color: #032da3;
-	color: #FFF;
-	text-transform: uppercase;
-	font-weight: bold;
-	padding: 20px;
-	transition: all .5s;
-	cursor: pointer;
-	font-size: larger;
-}
-
-button:hover {
-	background-color: #1f4fd1;
-}
-
-img {
-	width: 600px;
-}
-
-@media (min-width: 1920px) {
-
-	.left {
-		width: 450px;
+@media only screen and (max-width: 600px) {
+  .img {
+		width: 300px;
 	}
 
-  img {
-		width: 850px;
+	.header {
+		font-size: xx-small;
 	}
 
+	.main {
+		flex-direction: column;
+	}
 }
