@@ -1,5 +1,4 @@
 const appointmentsQuery = require('../queries/appointmentsQuery')
-const mail = require('../utils/mailer')
 const db = require('../db')
 
 async function listAppointments() {
@@ -121,17 +120,6 @@ async function listarCitasDelDiaPaciente(id_usuario) {
   }
 }
 
-async function correoDeCitasPendientes() {
-  try {
-    const citas = await appointmentsQuery.listarCorreoCitasPendientes();
-    if (citas) {
-      mail.enviarMailPendientes(citas);
-    }
-  } catch (error) {
-    console.error('Error al listar las citas.', error);
-  }
-}
-
 async function listarCitasPorMedico(id_usuario) {
   try {
     const citas = await appointmentsQuery.listarCitasPorMedico(id_usuario);
@@ -157,7 +145,6 @@ module.exports = {
   listarFechas,
   guardarCitas,
   listarCitaDelDia,
-  correoDeCitasPendientes,
   listarCitasPorMedico,
   listarCitasPorMedicoDiaActual,
   listarCitasDelDiaPaciente,

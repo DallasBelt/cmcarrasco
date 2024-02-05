@@ -1,7 +1,6 @@
 const medicsQuery = require('../queries/medicsQuery');
 const usuarioService = require('./usersService');
 const utilitarios = require('../utils/genUsername');
-const mail = require('../utils/mailer');
 
 async function listMedics() {
   try {

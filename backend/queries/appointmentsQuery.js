@@ -184,32 +184,6 @@ async function listarCitasDelPaciente(id_usuario) {
   }
 }
 
-//función para obtener los usuarios a los que se debe enviar correo de notificacion
-async function listarCorreoCitasPendientes() {
-  try {
-    const consulta = `
-        SELECT p.primer_nombre as p_primer_nombre, p.primer_apellido as p_primer_apellido, p.correo, 
-        m.primer_nombre as m_primer_nombre, m.primer_apellido as m_primer_apellido, cm.fecha_inicio, cm.especialidad
-        FROM cita_medica cm
-        INNER JOIN paciente p
-        ON p.id_paciente = cm.id_paciente
-        INNER JOIN medico m
-        ON m.id_medico = cm.id_medico
-        WHERE EXTRACT(EPOCH FROM (NOW() - cm.fecha_inicio)) <= 1800;        
-        `;
-
-    const result = await pool.query(consulta);
-
-    // const fechas = result.rows.map(row => row.fecha);
-    console.log(result.rows);
-
-    return result;
-  } catch (error) {
-    console.error('Error al ejecutar la consulta:', error);
-    throw error;
-  }
-}
-
 async function listarCitasPorMedico(id_usuario) {
   try {
     const consulta = `
@@ -259,7 +233,6 @@ module.exports = {
   listarFechas,
   guardarCitas,
   listarCitaDelDia,
-  listarCorreoCitasPendientes,
   listarCitasPorMedico,
   listarCitasPorMedicoDiaActual,
   listarCitasDelDiaPaciente,

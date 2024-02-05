@@ -1,7 +1,6 @@
 const usuarioService = require('./usersService');
 const genUsername = require('../utils/genUsername');
 const pacienteQuerys = require('../queries/pacienteQuerys');
-const mail = require('../utils/mailer');
 const db = require('../db')
 
 async function listPatients() {
