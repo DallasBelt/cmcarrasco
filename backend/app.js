@@ -13,7 +13,6 @@ const medicsRoute = require('./routes/medicsRoute');
 const patientsRoute = require('./routes/patientsRoute');
 const recordsRoute = require('./routes/recordsRoute');
 const usersRoute = require('./routes/usersRoute');
-const { EncryptPassword } = require('./utils/encryptPassword');
 
 const corsOptions = {
   origin: 'http://localhost:3001',
