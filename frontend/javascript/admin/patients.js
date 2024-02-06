@@ -1,95 +1,90 @@
 document.addEventListener('DOMContentLoaded', () => {
-  let userID
-  let originalPatientData = {}
+  let userID;
+
   
   // ===== INITIALIZE DATA TABLE =====
   const initDataTable = () => {
     $('#patients-table').DataTable({
       "columnDefs": [
-        { "orderable": false, "targets": [7] }
+        { "orderable": false,
+          "targets": [0, 7, 3]
+        }
       ],
+      order: [[1, 'asc']],
       language: {
         url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-MX.json',
       }
-    })
+    });
   }
-
-
-  // ===== RESET MODAL FIELDS WHEN EDITION MODE CLOSES =====
-  const resetCreateEditPatientModal = () => {
-    document.querySelector('#create-edit-patient-modal').addEventListener('hidden.bs.modal', () => {
-      document.querySelector('#createPatientModalLabel').textContent = 'Crear nuevo paciente'
-      document.querySelector('#create-edit-patient-modal form').reset()
-    })
-  }
-
-  // Calling the reset modal function
-  resetCreateEditPatientModal()
 
 
   // ===== LOAD PATIENT(S) INTO THE TABLE =====
 
   // Fetches the request to the server
-  const loadPatientsIntoTable = () => {
-    fetch('http://localhost:3000/patients/list')
-      .then(response => response.json())
-      .then(data => { 
-        if (data) {
-          document.querySelector('#patients-table').style.display = 'table'
-          const table = document.querySelector('#patients-table-data')
-          while (table.firstChild) {
-            table.removeChild(table.firstChild)
-          }
-          const fragment = document.createDocumentFragment()
-          data.forEach(item => {
-            const userID = item.id_usuario
-            const patientID = item.cedula
-            const patientFirstName = `${item.primer_nombre} ${item.segundo_nombre}`
-            const patientLastName = `${item.primer_apellido} ${item.segundo_apellido}`
-            const patientCellPhone = item.telefono_movil
-            const patientEmail = item.correo
-            const patientAge = calcAge(item.fecha_nacimiento)
-            const patientMaritalStatus = item.estado_civil
-            const row = document.createElement('tr')
-            row.innerHTML = `
-              <td>${patientID}</td>
-              <td>${patientFirstName}</td>
-              <td>${patientLastName}</td>
-              <td>${patientCellPhone}</td>
-              <td>${patientEmail}</td>
-              <td>${patientAge}</td>
-              <td>${patientMaritalStatus}</td>
-              <td>
-                <div>
-                  <button type='button' class='btn btn-primary btn-sm' id='edit-btn' data-bs-toggle='modal' data-bs-target='#create-edit-patient-modal' data-patient-id='${patientID}'>
-                    <i class='fa-solid fa-pen-to-square'></i>
-                  </button>
-                  <button type='button' class='btn btn-primary btn-sm' id='new-appt-btn' data-bs-toggle='modal' data-bs-target='#create-appt-modal'>
-                    <i class='fa-solid fa-calendar-plus'></i>
-                  </button>
-                  <button type='button' class='btn btn-danger btn-sm' id='del-pt-btn' data-user-id='${userID}'>
-                    <i class='fa-solid fa-trash'></i>
-                  </button>
-                </div>
-              </td>
-            `
-            fragment.appendChild(row)
-          })
-          table.appendChild(fragment)
-          initDataTable()
-        } else {
-          document.querySelector('.alert').style.display = 'block'
+  const loadPatientsIntoTable = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/patients/read', {
+        withCredentials: true
+      });
+      const data = response.data;
+
+      if (data) {
+        document.querySelector('#patients-table').style.display = 'table';
+        const table = document.querySelector('#patients-table-data');
+        while (table.firstChild) {
+            table.removeChild(table.firstChild);
         }
-      })
-      .catch((error) => {
-        console.error('Error en la solicitud de pacientes:', error.message)
-        document.querySelector('.alert').style.display = 'block'
-      })
-  }  
+        const fragment = document.createDocumentFragment();
+
+        data.forEach(item => {
+          const userID = item.id_usuario;
+          const patientID = item.cedula;
+          const patientFirstName = `${item.primer_nombre} ${item.segundo_nombre}`;
+          const patientLastName = `${item.primer_apellido} ${item.segundo_apellido}`;
+          const patientCellPhone = item.telefono_movil;
+          const patientEmail = item.correo;
+          const patientAge = calcAge(item.fecha_nacimiento);
+          const patientMaritalStatus = item.estado_civil;
+          
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${patientID}</td>
+            <td>${patientLastName}</td>
+            <td>${patientFirstName}</td>
+            <td>${patientCellPhone}</td>
+            <td>${patientEmail}</td>
+            <td>${patientAge}</td>
+            <td>${patientMaritalStatus}</td>
+            <td>
+              <div>
+                <button type='button' class='btn btn-primary btn-sm' id='edit-btn' data-bs-toggle='modal' data-bs-target='#create-edit-patient-modal' data-patient-id='${patientID}'>
+                    <i class='fa-solid fa-pen-to-square'></i>
+                </button>
+                <button type='button' class='btn btn-primary btn-sm' id='new-appt-btn' data-bs-toggle='modal' data-bs-target='#create-appt-modal'>
+                    <i class='fa-solid fa-calendar-plus'></i>
+                </button>
+                <button type='button' class='btn btn-danger btn-sm' id='del-pt-btn' data-user-id='${userID}'>
+                    <i class='fa-solid fa-trash'></i>
+                </button>
+              </div>
+            </td>
+          `;
+          fragment.appendChild(row);
+        });
+
+          table.appendChild(fragment);
+          initDataTable();
+        } else {
+          document.querySelector('.alert').style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Error en la solicitud de pacientes:', error.message);
+        document.querySelector('.alert').style.display = 'block';
+    }
+  };
   
   // Calls the function to show the patients in the table when the page loads
-  loadPatientsIntoTable()
-
+  loadPatientsIntoTable();
 
   // ===== CALCULATE THE AGE OF A PATIENT BASED ON THEIR DOB =====
   const calcAge = dobString => {
@@ -103,38 +98,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== EDIT AND UPDATE PATIENT =====
 
-  // Button trigger to open modal in edit mode and get the data from the attribute
-  document.querySelector('#patients-table').addEventListener('click', (e) => {
-    const targetButton = e.target.closest('button')
-    if (targetButton && targetButton.id === 'edit-btn') {
-      const patientID = targetButton.getAttribute('data-patient-id')
-      fillPatientDataInModal(patientID)
-    }
-  })
-  
-  // Fetch data based on patient ID to populate the fields
-  const fillPatientDataInModal = (patientID) => {
-    fetch('http://localhost:3000/patients/get', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ cedula: patientID }),
-    })
-    .then(response => response.json())
-    .then(data => {
-      document.querySelector('#createPatientModalLabel').textContent = 'Editar paciente registrado'
-      document.querySelector('#patient-id').value = data.cedula
-      document.querySelector('#patient-first-name').value = data.primer_nombre
-      document.querySelector('#patient-middle-name').value = data.segundo_nombre
-      document.querySelector('#patient-last-name-1').value = data.primer_apellido
-      document.querySelector('#patient-last-name-2').value = data.segundo_apellido
-      const patientDOB = new Date(data.fecha_nacimiento).toISOString().split('T')[0]
-      document.querySelector('#patient-dob').value = patientDOB
-      document.querySelector("select[name='patient-marital-status']").value = data.estado_civil
-      document.querySelector('#patient-address').value = data.direccion
-      document.querySelector('#patient-email').value = data.correo
-      document.querySelector('#patient-phone').value = data.telefono_movil
+   // Fetch data based on patient ID to populate the fields
+  const fillModal = async (patientID) => {
+    try {
+      const response = await axios.post('http://localhost:3000/patients/getByID', {cedula: patientID }, {
+        withCredentials: true
+      });
+      const data = response.data;
+    
+      document.querySelector('#patient-id').value = data.cedula;
+      document.querySelector('#patient-first-name').value = data.primer_nombre;
+      document.querySelector('#patient-middle-name').value = data.segundo_nombre;
+      document.querySelector('#patient-last-name-1').value = data.primer_apellido;
+      document.querySelector('#patient-last-name-2').value = data.segundo_apellido;
+      const patientDOB = new Date(data.fecha_nacimiento).toISOString().split('T')[0];
+      document.querySelector('#patient-dob').value = patientDOB;
+      document.querySelector("select[name='patient-marital-status']").value = data.estado_civil;
+      document.querySelector('#patient-address').value = data.direccion;
+      document.querySelector('#patient-email').value = data.correo;
+      document.querySelector('#patient-phone').value = data.telefono_movil;
 
       // Save loaded data for later comparison
       originalPatientData = {
@@ -150,12 +132,112 @@ document.addEventListener('DOMContentLoaded', () => {
         telefono_movil: data.telefono_movil,
         id_usuario: data.id_usuario
       }
-    })
-    .catch(error => {
-      console.error('Error al obtener datos del paciente:', error.message)
-    })
+    } catch(error) {
+        console.error('Error al obtener datos del paciente:', error.message);
+    }
+  };
+
+  // Button trigger to open modal in create mode
+  document.querySelector('#create-pt-btn').addEventListener('click', () => {
+    handleModal();
+  });
+
+  // Button trigger to open modal in edit mode and get the data from the attribute
+  document.querySelector('#patients-table').addEventListener('click', (e) => {
+    const targetButton = e.target.closest('button');
+    if (targetButton && targetButton.id === 'edit-btn') {
+      const patientID = targetButton.getAttribute('data-patient-id');
+      handleModal(patientID);
+    }
+  });
+
+  // Clear modal fields when closing create mode
+  const clearModal = () => {
+    document.querySelector('#create-edit-patient-modal').addEventListener('hidden.bs.modal', () => {
+      document.querySelector('#createEditPatientModalLabel').textContent = 'Crear nuevo paciente';
+      document.querySelector('#create-edit-patient-modal form').reset();
+    });
   }
 
+  const handleModal = (patientID = null) => {
+    if (patientID) {
+      // Edit mode
+      fillModal(patientID);
+      document.querySelector('#createEditPatientModalLabel').textContent = 'Editar paciente registrado';
+      document.querySelector('#create-save-btn').innerHTML = '<i class="fa-solid fa-floppy-disk me-1"></i>Guardar cambios';
+    } else {
+      // Create mode
+      clearModal();
+      document.querySelector('#createEditPatientModalLabel').textContent = 'Registrar nuevo paciente';
+      document.querySelector('#create-save-btn').innerHTML = '<i class="fa-solid fa-user-plus me-1"></i>Crear paciente';
+    }
+  };
+
+  const handleCreatePatient = async (e) => {
+    e.preventDefault();
+  
+    // Collect form data
+    const patientData = {
+      primer_nombre: document.querySelector('#patient-first-name').value,
+      segundo_nombre: document.querySelector('#patient-middle-name').value,
+      primer_apellido: document.querySelector('#patient-last-name-1').value,
+      segundo_apellido: document.querySelector('#patient-last-name-2').value,
+      cedula: document.querySelector('#patient-id').value,
+      fecha_nacimiento: document.querySelector('#patient-dob').value,
+      estado_civil: document.querySelector("select[name='patient-marital-status']").value,
+      direccion: document.querySelector('#patient-address').value,
+      correo: document.querySelector('#patient-email').value,
+      telefono_movil: document.querySelector('#patient-phone').value
+    };
+  
+    try {
+      const response = await axios.post('http://localhost:3000/patients/create', patientData, {
+        withCredentials: true
+      });
+      
+      if (response.status === 200) {
+        console.log('¡Paciente creado de manera exitosa!');
+        Swal.fire({
+          title: '¡Paciente creado de manera exitosa!',    
+          text: 'El paciente ha sido agregado a la base de datos.',                    
+          icon: 'success',
+          showConfirmButton: true,
+        });
+        document.querySelector('#create-edit-patient-form').reset();
+        $('#patients-table').DataTable().destroy();
+        $('#patients-table-data').empty();
+        loadPatientsIntoTable();
+      } else {
+        console.error('¡Error en la creación del paciente!');
+        Swal.fire({
+          title: '¡Error en la creación del paciente!',    
+          text: 'Hubo un problema al intentar crear el paciente.',                    
+          icon: 'error',
+          showConfirmButton: true
+        });
+      }
+    } catch (error) {
+      console.error('Error en la solicitud:', error.message);
+      if (error.response && error.response.status === 400) {
+        Swal.fire({
+          title: '¡Error!',
+          text: 'Cédula o correo ya registrado.',
+          icon: 'error',
+          showConfirmButton: true
+        });
+      } else {
+        Swal.fire({
+          title: '¡Error en la solicitud!',    
+          text: 'Hubo un problema con la solicitud.',                    
+          icon: 'error',
+          showConfirmButton: true
+        });
+      }
+    }
+  };
+
+  document.querySelector('#create-edit-patient-form').addEventListener('submit', handleCreatePatient);
+  
   /*const handleEditFormSubmit = async (e) => {
     e.preventDefault()
     
@@ -224,14 +306,14 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         // Manejar la situación de duplicados
       }
-    } catch (error) {
+    } catch (error) {generatedUsername
       console.error('Error en la verificación de duplicados:', error);
       // Manejar error
     }
   }*/
 
   // Function that analize the changes inside the form in edit mode
-  const handleEditFormSubmit = async (e) => {
+ /* const handleEditFormSubmit = async (e) => {
     e.preventDefault();
 
     // Objeto inicialmente vacío para guardar solo los datos actualizados
@@ -338,88 +420,88 @@ document.addEventListener('DOMContentLoaded', () => {
         showConfirmButton: true
       })
     }
-  }
+  }*/
 
   // Handles the submission of the patient form. This function is triggered when the form
   // for creating or editing a patient is submitted.
-  const updatePatientData = (updatedData) => {
-    console.log('Enviando datos:', updatedData)
-    return fetch('http://localhost:3000/patients/update', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedData)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`Error en la respuesta del servidor: ${response.status}`)
-        }
-        return response.json();
-    })
-    .then(data => {
-        // Aquí manejas la respuesta exitosa
-        console.log('Actualización exitosa:', data)
-        Swal.fire({
-          title: '¡Actualización exitosa!',    
-          text: 'Los datos del paciente fueron modificados correctamente.',                    
-          icon: 'success',
-          showConfirmButton: false,
-          timer: 3500
-        })
-    })
-    .catch(error => {
-        // Aquí manejas cualquier error que ocurra durante la solicitud
-        console.error('Error al actualizar los datos:', error)
-        Swal.fire({
-          title: '¡Actualización fallida!',    
-          text: 'No se modificaron los datos del paciente.',                    
-          icon: 'error',
-          showConfirmButton: false,
-          timer: 3500
-        })
-    });
-  }
+  // const updatePatientData = (updatedData) => {
+  //   console.log('Enviando datos:', updatedData)
+  //   return fetch('http://localhost:3000/patients/update', {
+  //       method: 'PUT',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(updatedData)
+  //   })
+  //   .then(response => {
+  //       if (!response.ok) {
+  //           throw new Error(`Error en la respuesta del servidor: ${response.status}`)
+  //       }
+  //       return response.json();
+  //   })
+  //   .then(data => {
+  //       // Aquí manejas la respuesta exitosa
+  //       console.log('Actualización exitosa:', data)
+  //       Swal.fire({
+  //         title: '¡Actualización exitosa!',    
+  //         text: 'Los datos del paciente fueron modificados correctamente.',                    
+  //         icon: 'success',
+  //         showConfirmButton: false,
+  //         timer: 3500
+  //       })
+  //   })
+  //   .catch(error => {
+  //       // Aquí manejas cualquier error que ocurra durante la solicitud
+  //       console.error('Error al actualizar los datos:', error)
+  //       Swal.fire({
+  //         title: '¡Actualización fallida!',    
+  //         text: 'No se modificaron los datos del paciente.',                    
+  //         icon: 'error',
+  //         showConfirmButton: false,
+  //         timer: 3500
+  //       })
+  //   });
+  // }
 
   // Event handler when submitting the form in edit mode
-  const createEditPatient = document.querySelector('#create-edit-patient-form')
-  if (createEditPatient) {
-    createEditPatient.addEventListener('submit', handleEditFormSubmit)
-  }
+  // const createEditPatient = document.querySelector('#create-edit-patient-form')
+  // if (createEditPatient) {
+  //   createEditPatient.addEventListener('submit', handleEditFormSubmit)
+  // }
 
   // Check if the ID value is already in the DB
-  const isDuplicatedID = (patientID) => {
-    return fetch('http://localhost:3000/patients/verifyID', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ cedula: patientID }),
-    })
-    .then(response => response.json())
-    .then(data => data.registeredID)
-    .catch(error => {
-      console.error(error)
-      throw new Error('Error al verificar la identificación')
-    })
-  }
+  // const isDuplicatedID = (patientID) => {
+  //   return fetch('http://localhost:3000/patients/verifyID', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({ cedula: patientID }),
+  //   })
+  //   .then(response => response.json())
+  //   .then(data => data.registeredID)
+  //   .catch(error => {
+  //     console.error(error)
+  //     throw new Error('Error al verificar la identificación')
+  //   })
+  // }
   
   // Check if the email value is already in the DB
-  const isDuplicatedEmail = (patientEmail) => {
-    return fetch('http://localhost:3000/patients/verifyEmail', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ correo: patientEmail }),
-    })
-    .then(response => response.json())
-    .then(data => data.registeredEmail)
-    .catch(error => {
-      console.error(error)
-      throw new Error('Error al verificar el correo electrónico')
-    })
-  }
+  // const isDuplicatedEmail = (patientEmail) => {
+  //   return fetch('http://localhost:3000/patients/verifyEmail', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({ correo: patientEmail }),
+  //   })
+  //   .then(response => response.json())
+  //   .then(data => data.registeredEmail)
+  //   .catch(error => {
+  //     console.error(error)
+  //     throw new Error('Error al verificar el correo electrónico')
+  //   })
+  // }
 
   // Handle the submition of the form
   // $('#create-new-patient-form').submit((e) => {

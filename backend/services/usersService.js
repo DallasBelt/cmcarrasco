@@ -1,41 +1,28 @@
-const { encriptar_contrasenia } = require('../utils/encryptPassword');
-const usuarioQuerys = require('../queries/userQueries');  // 
+const db = require('../db');
+const { EncryptPassword } = require('../utils/encryptPassword');
 
-async function guardarUsuario(usuario) {
+exports.create = async (user, t = db) => {
   try {
-    const encriptador = new encriptar_contrasenia();
-    const contra = await encriptador.encriptar(usuario.contrasenia); //Encriptar antes de mandar a guardar contraseña
-    const usuarioGuardado = {
-      nombre_usuario: usuario.nombre_usuario,
-      contrasenia: contra,
-      correo: usuario.correo,
-      activo: usuario.activo,
-      role_id: usuario.role_id,
-    };
+    const encryptor = new EncryptPassword();
+    const password = await encryptor.encrypt(user.contrasenia);
+    const query = `
+      INSERT INTO usuario(activo, contrasenia, correo, nombre_usuario, role_id)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING id_usuario
+    `;
+    const values = [
+      user.activo,
+      password,
+      user.correo,
+      user.nombre_usuario,
+      user.role_id
+    ];
 
-    const resultado = await usuarioQuerys.guardarUsuario(usuarioGuardado);
+    const result = await t.one(query, values);
 
-    return resultado;
+    return result.id_usuario;
   } catch (error) {
-
     console.error('Error al guardar el usuario:', error);
     throw new Error('Error al guardar el usuario en la base de datos');
   }
-}
-
-async function eliminarUsuario(usuario) {
-  try {
-      const usuarioEliminado = {
-          id_usuario: usuario.id_usuario,
-      };
-      await usuarioQuerys.eliminarUsuario(usuarioEliminado);
-      return 'Paciente eliminado correctamente.'
-  } catch (error) {
-      throw new Error('Error al eliminar paciente en la base de datos');
-  }
-}
-
-module.exports = {
-  guardarUsuario,
-  eliminarUsuario
 };

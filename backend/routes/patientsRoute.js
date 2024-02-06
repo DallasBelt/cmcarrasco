@@ -1,12 +1,15 @@
-const express = require('express')
-const router = express.Router()
-const patientsController = require('../controllers/patientsController')
+const express = require('express');
+const router = express.Router();
+const patientsController = require('../controllers/patientsController');
 
-router.get('/list', patientsController.listPatients)
-router.post('/get', patientsController.getPatientByID)
-router.post('/save', patientsController.savePatient)
-router.put('/update', patientsController.updatePatient)
-router.post('/verifyID', patientsController.verifyID)
-router.post('/verifyEmail', patientsController.verifyEmail)
+router.post('/create', patientsController.create);
+router.get('/read', patientsController.read);
+// router.post('/getByID', patientsController.getByID);
+// app.post('/create', function(req, res){
+//   patientsController.create
+// });
+// router.put('/update', patientsController.updatePatient);
+// router.post('/verifyID', patientsController.verifyID);
+// router.post('/verifyEmail', patientsController.verifyEmail);
 
 module.exports = router;

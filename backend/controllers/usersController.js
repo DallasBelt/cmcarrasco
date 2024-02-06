@@ -1,20 +1,14 @@
-const express = require('express');
 const usersService = require('../services/usersService')
 
-async function eliminarUsuario(req, res) {
+exports.create = async (req, res) => {
   try {
-    const datosPaciente = req.body;
-    const resultado = await usersService.eliminarUsuario(datosPaciente)
-    if (resultado.error) {
-      return res.status(resultado.status).json(resultado.error)
-    }
-    return res.status(200).json('Usuario eliminado correctamente.')
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json('Error interno del servidor')
-  }
-}
+    const userData = req.body;
 
-module.exports = {
-  eliminarUsuario,
-}
+    const userId = await usersService.create(userData);
+
+    res.status(200).json({ message: 'Usuario guardado con éxito', id_usuario: userId });
+  } catch (error) {
+    console.error('Error en guardarUsuario:', error);
+    res.status(500).json({ message: 'Error interno del servidor' });
+  }
+};

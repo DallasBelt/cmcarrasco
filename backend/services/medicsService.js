@@ -1,6 +1,5 @@
 const medicsQuery = require('../queries/medicsQuery');
 const usuarioService = require('./usersService');
-const utilitarios = require('../utils/genUsername');
 
 async function listMedics() {
   try {
@@ -15,12 +14,10 @@ async function listMedics() {
 // Función para guardar un medico
 async function guardarMedico(medico) {
   try {
-    // Generar un nombre de usuario
-    const nombreUsuarioGenerado = utilitarios.nombreUsuario(medico.primer_nombre, medico.cedula);
 
     // Crear un nuevo usuario
     const nuevoUsuario = {
-      nombre_usuario: nombreUsuarioGenerado,
+      nombre_usuario: `${medico.primer_nombre}${medico.cedula.substring(6)}`,
       contrasenia: medico.cedula,
       correo: medico.correo,
       activo: true,
