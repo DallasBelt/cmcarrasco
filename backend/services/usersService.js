@@ -1,5 +1,4 @@
 const db = require('../db');
-const { use } = require('../routes/patientsRoute');
 const { EncryptPassword } = require('../utils/encryptPassword');
 
 exports.create = async (user, t = db) => {

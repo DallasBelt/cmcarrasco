@@ -56,3 +56,15 @@ exports.update = async (req, res) => {
     res.status(500).json({ message: 'Error interno del servidor.' });
   }
 };
+
+exports.delete = async (req, res) => {
+  try {
+    const userID = req.body.id_usuario;
+    console.log(userID)
+    const result = await patientsService.delete(userID);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error en el controlador al eliminar el paciente:', error);
+    res.status(500).json({ message: 'Error al eliminar el paciente' });
+  }
+};

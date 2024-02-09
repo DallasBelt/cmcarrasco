@@ -39,7 +39,7 @@ document.querySelector('#patient-form').addEventListener('submit', async (e) => 
   }
 });
 
-// ===== INITIALIZE DATA TABLE =====
+// Initialize DataTable
 const initDataTable = () => {
   $('#patient-table').DataTable({
     "columnDefs": [
@@ -53,7 +53,6 @@ const initDataTable = () => {
     }
   });
 }
-
 
 // Loads the table and the data
 const loadPatientsIntoTable = async () => {
@@ -220,7 +219,7 @@ document.querySelector('#new-patient-btn').addEventListener('click', () => {
 // Button trigger to open modal in edit mode and get the data from the attribute
 document.querySelector('#patient-table').addEventListener('click', (e) => {
   const targetButton = e.target.closest('button');
-  if (targetButton && targetButton.id === 'edit-btn') {
+  if (targetButton && targetButton.id === 'edit-patient-btn') {
     const patientID = targetButton.getAttribute('data-patient-id');
     handleModal(patientID);
   }
@@ -228,28 +227,26 @@ document.querySelector('#patient-table').addEventListener('click', (e) => {
 
 // Clear modal fields when closing create mode
 const clearModal = () => {
-  document.querySelector('#patient-modal').addEventListener('hidden.bs.modal', () => {
-    document.querySelector('#PtModalLabel').textContent = 'Crear nuevo paciente';
-    document.querySelector('#patient-modal form').reset();
-  });
+  document.querySelector('#PatientModalLabel').textContent = 'Crear nuevo paciente';
+  document.querySelector('#patient-form').reset();
 }
 
 const handleModal = (patientID = null) => {
   if (patientID) {
     modalMode = 'edit';
     fillModal(patientID);
-    document.querySelector('#PtModalLabel').textContent = 'Editar paciente registrado';
+    document.querySelector('#PatientModalLabel').textContent = 'Editar paciente registrado';
     document.querySelector('#new-save-btn').innerHTML = '<i class="fa-solid fa-floppy-disk me-1"></i>Guardar cambios';
   } else {
     modalMode = 'create';
     clearModal();
-    document.querySelector('#PtModalLabel').textContent = 'Registrar nuevo paciente';
+    document.querySelector('#PatientModalLabel').textContent = 'Registrar nuevo paciente';
     document.querySelector('#new-save-btn').innerHTML = '<i class="fa-solid fa-user-plus me-1"></i>Crear paciente';
   }
 };
 
 
-// CREATE PATIENT FUNCTION
+// Create patient
 const createPatient = async (patientData) => {
 
   try {
@@ -298,18 +295,16 @@ const createPatient = async (patientData) => {
   }
 };
 
-// ===== DELETE PATIENT =====
-
-// Delete patient event trigger
+// Button trigger to open deletion confirmation and get the data from the attribute
 document.querySelector('#patient-table').addEventListener('click', (e) => {
   const targetButton = e.target.closest('button')
   if (targetButton && targetButton.id === 'del-patient-btn') {
+    const userID = targetButton.getAttribute('data-user-id');
+    console.log(userID)
     Swal.fire({
-      title: '¿Está seguro?',
+      title: '¿Seguro desea eliminar el paciente?',
       text: 'Esta acción no se puede deshacer.',
       icon: 'warning',
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#dc3545',
       confirmButtonText: 'Sí, eliminar',
       showCancelButton: true,
       cancelButtonText: 'No, cancelar',
@@ -317,46 +312,45 @@ document.querySelector('#patient-table').addEventListener('click', (e) => {
       focusCancel: true
     }).then((result) => {
       if (result.isConfirmed) {
-        deletePatient()
+        deletePatient(userID)
       }
     })
   }
 })
 
-const deletePatient = () => {
-  let userIdData = {
-    id_usuario: userId
+// Delete request to the server
+const deletePatient = async (userID) => {
+  try {
+    console.log(userID)
+    const response = await axios.delete('http://localhost:3000/patients/delete', {
+      data: { id_usuario: userID },
+      withCredentials: true
+    });
+
+    if (response.status === 400 || response.status === 404) {
+      Swal.fire({
+        title: 'Error en la eliminación',
+        text: 'Error: ' + response.data.message,
+        icon: 'error',
+        showConfirmButton: true
+      });
+    } else {
+      Swal.fire({
+        title: 'Paciente eliminado correctamente',
+        text: response.data.message,
+        icon: 'success',
+        showConfirmButton: true
+      });
+      $('#patient-table').DataTable().destroy();
+      $('#patient-table-data').empty();
+      loadPatientsIntoTable();
+    }
+  } catch (error) {
+    Swal.fire({
+      title: 'Error en la eliminación',
+      text: 'Error: ' + error.message,
+      icon: 'error',
+      showConfirmButton: true
+    });
   }
-  let requestOptions = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(userIdData)
-  }
-  fetch('http://localhost:3000/usuario/eliminar', requestOptions)
-    .then(response => response.json())
-    .then(data => {
-      if (data.statusCodeValue === 400 || data.statusCodeValue === 404) {
-        Swal.fire({
-          title: 'Error en la eliminación',
-          text: 'Error: ' + data.body,
-          icon: 'error',
-          showConfirmButton: true
-        })
-      } else {
-        Swal.fire({
-          title: 'Paciente eliminado correctamente',
-          text: data.body,
-          icon: 'success',
-          showConfirmButton: true
-        })
-        $('#patient-table').DataTable().destroy()
-        $('#patient-table-data').empty()
-        loadPatientsIntoTable()
-      }
-    })
-    .catch(error => {
-      console.log(error)
-    })
-}
+};

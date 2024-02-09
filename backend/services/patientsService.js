@@ -1,5 +1,4 @@
 const usersService = require('./usersService');
-// const genUsername = require('../utils/genUsername');
 const db = require('../db')
 
 exports.create = async (patient) => {
@@ -125,5 +124,15 @@ exports.update = async (patientData, trans = db) => {
   } catch (error) {
     console.error('Error al actualizar el paciente:', error);
     throw new Error('Error al actualizar el paciente en la base de datos');
+  }
+};
+
+exports.delete = async (userID) => {
+  try {
+    await db.none('DELETE FROM usuario WHERE id_usuario = $1', [userID]);
+    return { message: 'Paciente eliminado correctamente' };
+  } catch (error) {
+    console.error('Error al eliminar el paciente:', error);
+    throw new Error('Error al eliminar el paciente');
   }
 };
