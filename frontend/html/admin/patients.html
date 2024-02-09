@@ -43,7 +43,7 @@
         </ul>
         <div class='dropdown user-menu'>
           <button class='btn dropdown-toggle' type='button' data-bs-toggle='dropdown' aria-expanded='false'>
-            <i class='fa-regular fa-circle-user fa-xl pe-2'></i><span id='username-display'></span>
+            <i class='fa-solid fa-user-shield me-1 fa-xl pe-2'></i><span id='username-display'></span>
           </button>
           <ul class='dropdown-menu'>
             <li><a class='dropdown-item' href='#' id='logout'><i class='fa-solid fa-right-from-bracket pe-2'></i>Cerrar sesión</a></li>
@@ -60,20 +60,20 @@
       <h3 class='m-0'>No existen pacientes!</h3>
     </div>
 
-    <button type='button' class='btn btn-primary mb-5' id='create-pt-btn' data-bs-toggle='modal' data-bs-target='#create-edit-patient-modal'>
+    <button type='button' class='btn btn-primary mb-5' id='new-patient-btn' data-bs-toggle='modal' data-bs-target='#patient-modal'>
       <i class='fa-solid fa-user-injured me-1'></i>Crear paciente
     </button>
 
     <!-- Create/edit patient modal -->
-    <div class='modal fade' id='create-edit-patient-modal' tabindex='-1' aria-labelledby='createEditPatientModalLabel' aria-hidden='true'>
+    <div class='modal fade' id='patient-modal' tabindex='-1' aria-labelledby='PatientModalLabel' aria-hidden='true'>
       <div class='modal-dialog modal-xl modal-dialog-scrollable'>
         <div class='modal-content'>
           <div class='modal-header'>
-            <h1 class='modal-title fs-5' id='createEditPatientModalLabel'></h1>
+            <h1 class='modal-title fs-5' id='PatientModalLabel'></h1>
             <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
           </div>
           <div class='modal-body'>
-            <form class='px-4 pt-4 pb-0' id='create-edit-patient-form'>
+            <form class='px-4 pt-4 pb-0' id='patient-form'>
               <div class='d-flex gap-2 mb-3'>
                 <div>
                   <label for='patient-first-name' class='form-label'>Primer nombre</label>
@@ -105,10 +105,10 @@
                   <label for='patient-marital-status' class='form-label'>Estado civil</label>
                   <select name='patient-marital-status' id='patient-marital-status' class='form-select' required>    
                     <option value='' disabled selected hidden>Elija una opción...</option>               
-                    <option value='1'>Soltero(a)</option>
-                    <option value='2'>Casado(a)</option>
-                    <option value='3'>Viudo(a)</option>
-                    <option value='4'>Divorciado(a)</option>
+                    <option value='Soltero(a)'>Soltero(a)</option>
+                    <option value='Casado(a)'>Casado(a)</option>
+                    <option value='Viudo(a)'>Viudo(a)</option>
+                    <option value='Divorciado(a)'>Divorciado(a)</option>
                   </select>
                 </div>
               </div>
@@ -127,7 +127,7 @@
                 </div>       
               </div>
               <div class='d-flex justify-content-end mt-4'>
-                <button type='submit' class='btn btn-primary' id='create-save-btn'></button>
+                <button type='submit' class='btn btn-primary' id='new-save-btn'></button>
               </div>
             </form>
           </div>                  
@@ -139,7 +139,7 @@
     </div>
 
     <div class='table-responsive'>
-      <table class='table table-striped' id='patients-table'>
+      <table class='table table-striped' id='patient-table'>
         <thead>
           <tr>
             <th scope='col'>IDENTIFICACIÓN</th>
@@ -152,7 +152,7 @@
             <th scope='col'>OPCIONES</th>
           </tr>
         </thead>
-        <tbody id='patients-table-data'>
+        <tbody id='patient-table-data'>
         </tbody>
       </table>
     </div>

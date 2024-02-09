@@ -1,4 +1,5 @@
 const db = require('../db');
+const { use } = require('../routes/patientsRoute');
 const { EncryptPassword } = require('../utils/encryptPassword');
 
 exports.create = async (user, t = db) => {
@@ -24,5 +25,23 @@ exports.create = async (user, t = db) => {
   } catch (error) {
     console.error('Error al guardar el usuario:', error);
     throw new Error('Error al guardar el usuario en la base de datos');
+  }
+};
+
+exports.update = async (userID, newEmail, trans = db) => {
+  try {
+    const query = `
+      UPDATE usuario
+      SET correo = $1
+      WHERE id_usuario = $2
+    `;
+    const values = [newEmail, userID];
+    
+    await trans.none(query, values);
+
+    return { message: 'Correo del usuario actualizado correctamente' };
+  } catch (error) {
+    console.error('Error al actualizar el usuario:', error);
+    throw new Error('Error al actualizar el usuario en la base de datos');
   }
 };
