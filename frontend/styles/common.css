@@ -4,8 +4,12 @@
   box-sizing: border-box;
 }
 
+*[disabled] {
+  pointer-events: auto !important;
+  cursor: not-allowed !important;
+}
+
 body {
-  background-color: #EAEBEF;
   font-family: 'Ubuntu', sans-serif;
 }
 
@@ -34,7 +38,8 @@ table {
 }
 
 label[for]:has(+ input[required])::after,
-label[for]:has(+ select[required])::after {
+label[for]:has(+ select[required])::after,
+.required::after {
   content: '*';
   color: red;
 }
