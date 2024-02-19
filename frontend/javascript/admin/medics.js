@@ -1,23 +1,3 @@
-// Bootstrap form validation
-(() => {
-  'use strict'
-
-  // Fetch all the forms we want to apply custom Bootstrap validation styles to
-  const forms = document.querySelectorAll('.needs-validation')
-
-  // Loop over them and prevent submission
-  Array.from(forms).forEach(form => {
-    form.addEventListener('submit', event => {
-      if (!form.checkValidity()) {
-        event.preventDefault()
-        event.stopPropagation()
-      }
-
-      form.classList.add('was-validated')
-    }, false)
-  })
-})()
-
 document.addEventListener('DOMContentLoaded', () => {
   loadMedicsIntoTable();
 });
@@ -88,10 +68,10 @@ const loadMedicsIntoTable = async () => {
           <td>${medicMaritalStatus}</td>
           <td>
             <div>
-              <button type='button' class='btn btn-primary' id='edit-medic-btn' data-bs-toggle='modal' data-bs-target='#medic-modal' data-medic-id='${medicID}'>
+              <button type='button' class='btn btn-primary btn-sm' id='edit-medic-btn' data-bs-toggle='modal' data-bs-target='#medic-modal' data-medic-id='${medicID}'>
                 <i class='fa-solid fa-pen-to-square'></i>
               </button>
-              <button type='button' class='btn btn-danger' id='del-medic-btn' data-user-id='${userID}'>
+              <button type='button' class='btn btn-danger btn-sm' id='del-medic-btn' data-user-id='${userID}'>
                 <i class='fa-solid fa-trash'></i>
               </button>
             </div>
@@ -119,8 +99,8 @@ document.querySelector('#new-medic-btn').addEventListener('click', () => {
   document.querySelector('#MedicModalLabel').textContent = 'Crear nuevo médico';
   document.querySelector('#submit-medic-data').innerHTML = '<i class="fa-solid fa-user-plus me-1"></i>Crear médico';
 
-  initializeFlatpickrForSchedule(document.querySelector('.schedule'), 1);
-  changeFlatpickrInputsState(document.querySelector('.schedule'), 1);
+  initializeFlatpickr(document.querySelector('.schedule'));
+  changeFlatpickrInputsState(document.querySelector('.schedule'));
 });
 
 // Button trigger to open modal in edit mode
@@ -136,65 +116,8 @@ document.querySelector('#medic-table').addEventListener('click', (e) => {
   }
 });
 
-// Add schedule
-let maxSchedules = 3;
-let scheduleCount = 1;
-
-document.querySelector('#add-schedule-btn').addEventListener('click', () => {
-  if (scheduleCount < maxSchedules) {
-    const schedulesContainer = document.querySelector('.schedules-container');
-    const originalSchedule = document.querySelector('.schedule');
-    const newSchedule = originalSchedule.cloneNode(true);
-
-    newSchedule.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-      checkbox.checked = false;
-    });
-
-    newSchedule.querySelectorAll('.message-placeholder').forEach(messagePlaceholder => {
-      while (messagePlaceholder.firstChild) {
-          messagePlaceholder.removeChild(messagePlaceholder.firstChild);
-      }
-    });
-
-    scheduleCount++;
-
-    updateScheduleAttributes(newSchedule, scheduleCount);
-    schedulesContainer.appendChild(newSchedule);
-
-    if (scheduleCount === maxSchedules) {
-      document.querySelector('#add-schedule-btn').disabled = true;
-    }
-
-    initializeFlatpickrForSchedule(newSchedule, scheduleCount);
-    changeFlatpickrInputsState(newSchedule, scheduleCount);
-
-  }
-});
-
-const updateScheduleAttributes = (schedule, count) => {
-
-  schedule.dataset.scheduleId = count;
-
-  schedule.querySelector('.schedule-num').textContent = count;
-
-  schedule.querySelectorAll('input, label, button, div').forEach(element => {
-    if (element.id) {
-      const newID = element.id.replace(/\d+$/, count);
-      element.id = newID;
-      if (element.tagName === 'INPUT') {
-        element.name = newID;
-      }
-    }
-
-    if (element.getAttribute('for')) {
-      const newFor = element.getAttribute('for').replace(/\d+$/, count);
-      element.setAttribute('for', newFor);
-    }
-  });
-};
-
-const initializeFlatpickrForSchedule = (schedule, count) => {
-  flatpickr(schedule.querySelector(`#morning-shift-start-${count}`), {
+const initializeFlatpickr = () => {
+  flatpickr('#morning-shift-start', {
     enableTime: true,
     noCalendar: true,
     dateFormat: 'H:i',
@@ -203,7 +126,7 @@ const initializeFlatpickrForSchedule = (schedule, count) => {
     maxTime: '12:30',
     minuteIncrement: 30,
     onClose: function(selectedDates, dateStr, instance) {
-      const endDatePicker = schedule.querySelector(`#morning-shift-end-${count}`)._flatpickr;
+      const endDatePicker = document.querySelector('#morning-shift-end')._flatpickr;
       if (endDatePicker.selectedDates.length > 0) {
         const selectedStartDate = new Date(selectedDates[0]);
         const selectedEndDate = new Date(endDatePicker.selectedDates[0]);
@@ -215,7 +138,7 @@ const initializeFlatpickrForSchedule = (schedule, count) => {
     }
   });
 
-  flatpickr(schedule.querySelector(`#morning-shift-end-${count}`), {
+  flatpickr('#morning-shift-end', {
     enableTime: true,
     noCalendar: true,
     dateFormat: 'H:i',
@@ -224,7 +147,7 @@ const initializeFlatpickrForSchedule = (schedule, count) => {
     maxTime: '13:00',
     minuteIncrement: 30,
     onClose: function(selectedDates, dateStr, instance) {
-      const startDatePicker = schedule.querySelector(`#morning-shift-start-${count}`)._flatpickr;
+      const startDatePicker = document.querySelector('#morning-shift-start')._flatpickr;
       if (startDatePicker.selectedDates.length > 0) {
         const selectedEndDate = new Date(selectedDates[0]);
         const selectedStartDate = new Date(startDatePicker.selectedDates[0]);
@@ -236,7 +159,7 @@ const initializeFlatpickrForSchedule = (schedule, count) => {
     }
   });
 
-  flatpickr(schedule.querySelector(`#afternoon-shift-start-${count}`), {
+  flatpickr('#afternoon-shift-start', {
     enableTime: true,
     noCalendar: true,
     dateFormat: 'H:i',
@@ -245,7 +168,7 @@ const initializeFlatpickrForSchedule = (schedule, count) => {
     maxTime: '18:30',
     minuteIncrement: 30,
     onClose: function(selectedDates, dateStr, instance) {
-      const endDatePicker = schedule.querySelector(`#afternoon-shift-end-${count}`)._flatpickr;
+      const endDatePicker = document.querySelector('#afternoon-shift-end')._flatpickr;
       if (endDatePicker.selectedDates.length > 0) {
         const selectedStartDate = new Date(selectedDates[0]);
         const selectedEndDate = new Date(endDatePicker.selectedDates[0]);
@@ -257,7 +180,7 @@ const initializeFlatpickrForSchedule = (schedule, count) => {
     }
   });
 
-  flatpickr(schedule.querySelector(`#afternoon-shift-end-${count}`), {
+  flatpickr('#afternoon-shift-end', {
     enableTime: true,
     noCalendar: true,
     dateFormat: 'H:i',
@@ -266,7 +189,7 @@ const initializeFlatpickrForSchedule = (schedule, count) => {
     maxTime: '19:00',
     minuteIncrement: 30,
     onClose: function(selectedDates, dateStr, instance) {
-      const startDatePicker = schedule.querySelector(`#afternoon-shift-start-${count}`)._flatpickr;
+      const startDatePicker = document.querySelector('#afternoon-shift-start')._flatpickr;
       if (startDatePicker.selectedDates.length > 0) {
         const selectedEndDate = new Date(selectedDates[0]);
         const selectedStartDate = new Date(startDatePicker.selectedDates[0]);
@@ -279,18 +202,18 @@ const initializeFlatpickrForSchedule = (schedule, count) => {
   });
 };
 
-const changeFlatpickrInputsState = (schedule, count) => {
-  const morningCheckbox = schedule.querySelector(`#morning-checkbox-${count}`);
-  const afternoonCheckbox = schedule.querySelector(`#afternoon-checkbox-${count}`);
+const changeFlatpickrInputsState = () => {
+  const morningCheckbox = document.querySelector('#morning-checkbox');
+  const afternoonCheckbox = document.querySelector('#afternoon-checkbox');
 
   const morningInputs = [
-    document.querySelector(`#morning-shift-start-${count}`),
-    document.querySelector(`#morning-shift-end-${count}`)
+    document.querySelector('#morning-shift-start'),
+    document.querySelector('#morning-shift-end')
   ];
   
   const afternoonInputs = [
-    document.querySelector(`#afternoon-shift-start-${count}`),
-    document.querySelector(`#afternoon-shift-end-${count}`)
+    document.querySelector('#afternoon-shift-start'),
+    document.querySelector('#afternoon-shift-end')
   ];
 
   // Enable or disable the Flatpickr inputs based on the checkbox button state
@@ -309,41 +232,9 @@ const changeFlatpickrInputsState = (schedule, count) => {
   });
 };
 
-// Delete schedule event listener
-document.querySelector('.schedules-container').addEventListener('click', (e) => {
-  const deleteButton = e.target.closest(`[id^='del-schedule-btn-']`);
-  if (deleteButton) {
-    const scheduleNumber = deleteButton ? deleteButton.id.split('-')[3] : e.target.id.split('-')[3];
-    deleteSchedule(scheduleNumber);
-  }
-});
-
-// Delete a schedule
-const deleteSchedule = (scheduleNumber) => {
-  const scheduleElement = document.querySelector(`[data-schedule-id='${scheduleNumber}']`);
- 
-  if (scheduleElement) {
-    scheduleElement.remove();
-    scheduleCount--;
-
-    if (scheduleCount < maxSchedules) {
-      document.querySelector('#add-schedule-btn').disabled = false;
-    }
-
-    const remainingSchedules = document.querySelectorAll('.schedule');
-    remainingSchedules.forEach((schedule, index) => {
-      const newScheduleNumber = index + 1;
-      schedule.dataset.scheduleId = newScheduleNumber;
-      updateScheduleAttributes(schedule, newScheduleNumber);
-    });
-  }
-}
-
+// Submit form handler
 document.querySelector('#medic-form').addEventListener('submit', async (e) => {
-
   e.preventDefault();
-  
-  validateSpecialties();
 
   // Event listener for the specialties group checkboxes states
   const checkboxes = document.querySelectorAll('#specialties-group input[type="checkbox"]');
@@ -351,34 +242,19 @@ document.querySelector('#medic-form').addEventListener('submit', async (e) => {
     checkbox.addEventListener('change', validateSpecialties);
   });
 
-  // Call validateSchedules function for each schedule after form submission
-  for (let scheduleNumber = 1; scheduleNumber <= scheduleCount; scheduleNumber++) {
-    ['days', 'shifts'].forEach(group => {
-        validateSchedules(group, scheduleNumber);
-    });
-  }
-
+  // Event listener for the days and shifts groups' checkboxes states
   ['days', 'shifts'].forEach(group => {
-    for (let scheduleNumber = 1; scheduleNumber <= scheduleCount; scheduleNumber++) {
-      const checkboxes = document.querySelectorAll(`#${group}-group-${scheduleNumber} input[type="checkbox"]`);
-      checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', () => {
-          validateSchedules(group, scheduleNumber);
-        });
+    const checkboxes = document.querySelectorAll(`#${group}-group input[type="checkbox"]`);
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', () => {
+        validateSchedules(group);
       });
-    }
+    });
   });
 
-});
-
-// Submit form handler
-/*document.querySelector('#medic-form').addEventListener('submit', async (e) => {
-  validateSpecialties();
-  e.preventDefault();
-
-  // if (!validateForm()) {
-  //   return;
-  // }
+  if (!validateForm()) {
+    return;
+  }
 
   // Create an object for the Medic Specialties based on the selected checkboxes
   const specialties = document.querySelectorAll("input[name='medic-specialties']:checked");
@@ -396,26 +272,50 @@ document.querySelector('#medic-form').addEventListener('submit', async (e) => {
     selectedDays[checked.value] = true;
   });
 
+  const morningShiftCheckbox = document.querySelector('#morning-shift-checkbox');
+  if (morningShiftCheckbox.checked && !morningShiftCheckbox.disabled) {
+    const morningShiftStart = document.querySelector('#morning-shift-start').value;
+    const morningShiftEnd = document.querySelector('#morning-shift-end').value;
+    if (morningShiftStart && morningShiftEnd) {
+      shifts.morning = {
+        start: morningShiftStart,
+        end: morningShiftEnd
+      };
+    }
+  }
+
+  const afternoonShiftCheckbox = document.querySelector('#afternoon-shift-checkbox');
+  if (afternoonShiftCheckbox.checked && !afternoonShiftCheckbox.disabled) {
+    const afternoonShiftStart = document.querySelector('#afternoon-shift-start').value;
+    const afternoonShiftEnd = document.querySelector('#afternoon-shift-end').value;
+    if (afternoonShiftStart && afternoonShiftEnd) {
+      shifts.afternoon = {
+        start: afternoonShiftStart,
+        end: afternoonShiftEnd
+      };
+    }
+  }
+
   // Create an object for the Medic Shifts based on the Flatpickr inputs
-  const morningShiftStart = document.querySelector('#morning-shift-start').value;
-  const morningShiftEnd = document.querySelector('#morning-shift-end').value;
-  const afternoonShiftStart = document.querySelector('#afternoon-shift-start').value;
-  const afternoonShiftEnd = document.querySelector('#afternoon-shift-end').value;
-  const shifts = {};
+  // const morningShiftStart = document.querySelector('#morning-shift-start').value;
+  // const morningShiftEnd = document.querySelector('#morning-shift-end').value;
+  // const afternoonShiftStart = document.querySelector('#afternoon-shift-start').value;
+  // const afternoonShiftEnd = document.querySelector('#afternoon-shift-end').value;
+  // const shifts = {};
   
-  if (morningShiftStart && morningShiftEnd) {
-    shifts.morning = {
-      start: morningShiftStart,
-      end: morningShiftEnd
-    };
-  }
+  // if (morningShiftStart && morningShiftEnd) {
+  //   shifts.morning = {
+  //     start: morningShiftStart,
+  //     end: morningShiftEnd
+  //   };
+  // }
   
-  if (afternoonShiftStart && afternoonShiftEnd) {
-    shifts.afternoon = {
-      start: afternoonShiftStart,
-      end: afternoonShiftEnd
-    };
-  }
+  // if (afternoonShiftStart && afternoonShiftEnd) {
+  //   shifts.afternoon = {
+  //     start: afternoonShiftStart,
+  //     end: afternoonShiftEnd
+  //   };
+  // }
 
   const medicData = {
     primer_nombre: document.querySelector('#medic-first-name').value,
@@ -447,7 +347,24 @@ document.querySelector('#medic-form').addEventListener('submit', async (e) => {
       showConfirmButton: true
     });
   }
-});*/
+});
+
+// Validations
+
+const validatePersonalData = () => {
+  let isValid = true;
+
+  const forms = document.querySelectorAll('.needs-validation');
+
+  Array.from(forms).forEach(form => {
+    if (!form.checkValidity()) {
+      isValid = false;
+    }
+    form.classList.add('was-validated');
+  });
+
+  return isValid;
+};
 
 const validateSpecialties = () => {
   const checkboxes = document.querySelectorAll('#specialties-group input[type="checkbox"]');
@@ -460,27 +377,50 @@ const validateSpecialties = () => {
     document.querySelector('#specialties-message-placeholder').insertAdjacentElement('afterbegin', specialtiesValidationMessage);
   }
 
+  const validationPassed = isChecked;
   specialtiesValidationMessage.innerHTML = `<span><i class='fa-solid ${isChecked ? 'fa-check' : 'fa-circle-exclamation'} me-2'></i>${isChecked ? 'Bien, ha seleccionado al menos una opción.' : 'Debe seleccionar al menos una opción'}</span>`;
   specialtiesValidationMessage.classList.remove('valid-feedback', 'invalid-feedback');
   specialtiesValidationMessage.classList.add(isChecked ? 'valid-feedback' : 'invalid-feedback');
   specialtiesValidationMessage.style.display = 'inline';
+
+  return validationPassed;
 };
 
-const validateSchedules = (group, schedule) => {
-  const checkboxes = document.querySelectorAll(`#${group}-group-${schedule} input[type="checkbox"]`);
+const validateSchedules = (group) => {
+  const checkboxes = document.querySelectorAll(`#${group}-group input[type="checkbox"]`);
   const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
 
-  let validationMessage = document.querySelector(`#${group}-validation-message-${schedule}`);
+  let validationMessage = document.querySelector(`#${group}-validation-message`);
   if (!validationMessage) {
     validationMessage = document.createElement('div');
-    validationMessage.id = `${group}-validation-message-${schedule}`;
-    document.querySelector(`#${group}-message-placeholder-${schedule}`).insertAdjacentElement('afterbegin', validationMessage);
+    validationMessage.id = `${group}-validation-message`;
+    document.querySelector(`#${group}-message-placeholder`).insertAdjacentElement('afterbegin', validationMessage);
   }
 
+  const validationPassed = isChecked;
   validationMessage.innerHTML = `<span><i class='fa-solid ${isChecked ? 'fa-check' : 'fa-circle-exclamation'} me-2'></i>${isChecked ? 'Bien, ha seleccionado al menos una opción.' : 'Debe seleccionar al menos una opción'}</span>`;
   validationMessage.classList.remove('valid-feedback', 'invalid-feedback');
   validationMessage.classList.add(isChecked ? 'valid-feedback' : 'invalid-feedback');
   validationMessage.style.display = 'inline';
+
+  return validationPassed;
+};
+
+const validateForm = () => {
+
+  const personalDataValid = validatePersonalData();
+
+  const specialtiesValid = validateSpecialties();
+
+  let schedulesValid = true;
+  
+  ['days', 'shifts'].forEach(group => {
+    if (!validateSchedules(group)) {
+      schedulesValid = false;
+    }
+  });
+
+  return personalDataValid && specialtiesValid && schedulesValid;
 };
 
 // Create medic

@@ -200,11 +200,10 @@
                     
                     <p class='required mb-2'>Horarios de atención</p>
                     <div class='schedules-container'>
-                      <div class='p-3 mb-3 bg-light rounded schedule' data-schedule-id='1'>
+                      <div class='p-3 mb-3 bg-light rounded'>
                         <div class='row g-2 mb-2'>
-                          <div class='col-sm-12 d-flex justify-content-between align-items-center'>
-                            <p class='m-0'>Horario <span class='schedule-num'>1</span></p>
-                            <button type='button' class='btn btn-sm btn-danger' id='del-schedule-btn-1'><span><i class="fa-solid fa-trash"></i></span></button>
+                          <div class='col-sm-12 text-center'>
+                            <span>Horario</span>
                           </div>
                         </div>
                         <div class='row g-2'>
@@ -216,37 +215,37 @@
                             </div>
                             <div class='row g-2'>
                               <div class='col-12 text-center'>
-                                <div id='days-message-placeholder-1' class='message-placeholder'></div>
+                                <div id='days-message-placeholder' class='message-placeholder'></div>
                               </div>
                             </div>
                             
-                            <div id='days-group-1'>
+                            <div id='days-group'>
                               <div class='row p-1 g-2'>
                                 <div class='col-sm-12 col-xl-4'>
-                                  <input type='checkbox' class='btn-check' id='monday-1' name='medic-schedule-1' value='Lunes'>
-                                  <label class='btn btn-outline-primary w-100' for='monday-1'>Lunes</label>
+                                  <input type='checkbox' class='btn-check' id='monday' name='medic-schedule' value='Lunes'>
+                                  <label class='btn btn-outline-primary w-100' for='monday'>Lunes</label>
                                 </div>
                                 <div class='col-sm-12 col-xl-4'>
-                                  <input type='checkbox' class='btn-check' id='tuesday-1' name='medic-schedule-1' value='Martes'>
-                                  <label class='btn btn-outline-primary w-100' for='tuesday-1'>Martes</label>
+                                  <input type='checkbox' class='btn-check' id='tuesday' name='medic-schedule' value='Martes'>
+                                  <label class='btn btn-outline-primary w-100' for='tuesday'>Martes</label>
                                 </div>
                                 <div class='col-sm-12 col-xl-4'>
-                                  <input type='checkbox' class='btn-check' id='wednesday-1' name='medic-schedule-1' value='Miércoles'>
-                                  <label class='btn btn-outline-primary w-100' for='wednesday-1'>Miércoles</label>
+                                  <input type='checkbox' class='btn-check' id='wednesday' name='medic-schedule' value='Miércoles'>
+                                  <label class='btn btn-outline-primary w-100' for='wednesday'>Miércoles</label>
                                 </div>
                               </div>
                               <div class='row p-1 g-2'>
                                 <div class='col-sm-12 col-xl-4'>
-                                  <input type='checkbox' class='btn-check' id='thursday-1' name='medic-schedule-1' value='Jueves'>
-                                  <label class='btn btn-outline-primary w-100' for='thursday-1'>Jueves</label>
+                                  <input type='checkbox' class='btn-check' id='thursday' name='medic-schedule' value='Jueves'>
+                                  <label class='btn btn-outline-primary w-100' for='thursday'>Jueves</label>
                                 </div>
                                 <div class='col-sm-12 col-xl-4'>
-                                  <input type='checkbox' class='btn-check' id='friday-1' name='medic-schedule-1' value='Viernes'>
-                                  <label class='btn btn-outline-primary w-100' for='friday-1'>Viernes</label>
+                                  <input type='checkbox' class='btn-check' id='friday' name='medic-schedule' value='Viernes'>
+                                  <label class='btn btn-outline-primary w-100' for='friday'>Viernes</label>
                                 </div>
                                 <div class='col-sm-12 col-xl-4'>
-                                  <input type='checkbox' class='btn-check' id='saturday-1' name='medic-schedule-1' value='Sábado'>
-                                  <label class='btn btn-outline-primary w-100' for='saturday-1'>Sábado</label>
+                                  <input type='checkbox' class='btn-check' id='saturday' name='medic-schedule' value='Sábado'>
+                                  <label class='btn btn-outline-primary w-100' for='saturday'>Sábado</label>
                                 </div>
                               </div>
                             </div>
@@ -259,54 +258,49 @@
                             </div>
                             <div class='row g-2'>
                               <div class='col-12 text-center'>
-                                <div id='shifts-message-placeholder-1' class='message-placeholder'></div>
+                                <div id='shifts-message-placeholder' class='message-placeholder'></div>
                               </div>
                             </div>
-                            <div id='shifts-group-1'>
+                            <div id='shifts-group'>
                               <div class='row p-1 g-2'>
                                 <div class='col-sm-12 col-xl-4'>
-                                  <input type='checkbox' class='btn-check' id='morning-checkbox-1' name='medic-shifts-1' autocomplete='off'>
-                                  <label class='btn btn-outline-primary w-100' for='morning-checkbox-1'>Mañana</label>
+                                  <input type='checkbox' class='btn-check' id='morning-checkbox' name='medic-shifts' autocomplete='off'>
+                                  <label class='btn btn-outline-primary w-100' for='morning-checkbox'>Mañana</label>
                                 </div>
                                 <div class='col-sm-12 col-xl-4'>
                                   <div class='input-group'>
                                     <span class='input-group-text'>Desde</span>
-                                    <input type='text' class='form-control morning-time-input-1' id='morning-shift-start-1' name='medic-morning-shift-1' disabled>
+                                    <input type='text' class='form-control morning-time-input' id='morning-shift-start' name='medic-morning-shift' disabled>
                                   </div>
                                 </div>
                                 <div class='col-sm-12 col-xl-4'>
                                   <div class='input-group'>
                                     <span class='input-group-text'>Hasta</span>
-                                    <input type='text' class='form-control morning-time-input-1' id='morning-shift-end-1' name='medic-morning-shift-1' disabled>
+                                    <input type='text' class='form-control morning-time-input' id='morning-shift-end' name='medic-morning-shift' disabled>
                                   </div>
                                 </div>
                               </div>
                               <div class='row p-1 g-2'>
                                 <div class='col-sm-12 col-xl-4'>
-                                  <input type='checkbox' class='btn-check' id='afternoon-checkbox-1' name='medic-shifts-1' autocomplete='off'>
-                                  <label class='btn btn-outline-primary w-100' for='afternoon-checkbox-1'>Tarde</label>
+                                  <input type='checkbox' class='btn-check' id='afternoon-checkbox' name='medic-shifts' autocomplete='off'>
+                                  <label class='btn btn-outline-primary w-100' for='afternoon-checkbox'>Tarde</label>
                                 </div>
                                 <div class='col-sm-12 col-xl-4'>
                                   <div class='input-group'>      
                                     <span class='input-group-text'>Desde</span>
-                                    <input type='text' class='form-control afternoon-time-input-1' id='afternoon-shift-start-1' name='medic-afternoon-shift-1' disabled>
+                                    <input type='text' class='form-control afternoon-time-input' id='afternoon-shift-start' name='medic-afternoon-shift' disabled>
                                   </div>
                                 </div>
                                 <div class='col-sm-12 col-xl-4'>
                                   <div class='input-group'>
                                     <span class='input-group-text'>Hasta</span>
-                                    <input type='text' class='form-control afternoon-time-input-1' id='afternoon-shift-end-1' name='medic-afternoon-shift-1' disabled>
+                                    <input type='text' class='form-control afternoon-time-input' id='afternoon-shift-end' name='medic-afternoon-shift' disabled>
                                   </div>  
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                    <div class='row text-center mt-3'>
-                      <div class='col-12'>
-                        <button type='button' class='btn btn-success' id='add-schedule-btn'><i class='fa-regular fa-calendar-plus me-2'></i>Agregar horario</button>
                       </div>
                     </div>
                   </div>
