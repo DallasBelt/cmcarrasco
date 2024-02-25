@@ -1,63 +1,75 @@
 const medicsService = require('../services/medicsService')
 
-async function listMedics(req, res) {
+exports.create = async (req, res) => {
   try {
-    const resultado = await medicsService.listMedics()
-    if (resultado.error) {
-      return res.status(resultado.status).json(resultado.error)
+    let medicData = req.body;
+    
+    medicData.especialidad = JSON.stringify(medicData.especialidad);
+    medicData.schedule = JSON.stringify(medicData.schedule);
+    medicData.shifts = JSON.stringify(medicData.shifts);
+
+    const result = await medicsService.create(medicData);
+    if (result.error) {
+      return res.status(result.status).json(result.message);
+    }
+    res.status(200).json({ statusCodeValue: 200, body: 'Medic successfully created!' });
+  } catch (error) {
+    if (error.code === '23505') {
+      res.status(400).json({ statusCodeValue: 400, error: 'ID or email are already registered.' });
+    } else {
+      res.status(500).json({ statusCodeValue: 500, error: 'Internal server error.' });
+    }
+  }
+};
+
+exports.read = async (_, res) => {
+  try {
+    const result = await medicsService.read();
+    if (result.error) {
+      return res.status(result.status).json(result.message);
+    }
+    return res.status(200).json(result);
+  } catch (error) {
+      return res.status(500).json({ statusCodeValue: 500, error: error.message });
+  }
+};
+
+exports.readByID = async (req, res) => {
+  try {
+    const id = req.body.cedula;
+    const medicData = await medicsService.readByID(id);
+    res.status(200).json(medicData);
+  } catch (error) {
+    console.error('Error:', error.message);
+    res.status(500).send('Error while trying to obtain medic data.');
+  }
+};
+
+exports.update = async (req, res) => {
+  try {
+    const medicData = req.body;
+    
+    const result = await medicsService.update(medicData);
+
+    if (result.error) {
+      return res.status(400).json({ message: result.error });
     }
 
-    return res.status(200).json(resultado)
+    res.status(200).json({ message: 'Medic successfully updated!' });
   } catch (error) {
-    console.error(error)
-    return res.status(500).json('Error interno del servidor')
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Internal server error.' });
   }
-}
+};
 
-async function guardarMedico(req, res) {
+exports.delete = async (req, res) => {
   try {
-    // Obtiene los datos del paciente del cuerpo de la solicitud
-    const datosMedico = req.body;
-
-    // Llama al servicio para guardar el paciente en la base de datos
-    const resultado = await medicsService.guardarMedico(datosMedico);
-
-    // Verifica si se produjo un error al guardar el paciente
-    if (resultado.error) {
-      return res.status(resultado.status).json(resultado.error);
-    }
-
-    // Si se guardó correctamente, devuelve una respuesta exitosa
-    return res.status(200).json('Medico guardado correctamente.');
+    const userID = req.body.id_usuario;
+    console.log(userID)
+    const result = await medicsService.delete(userID);
+    res.status(200).json(result);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json('Error interno del servidor');
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Error while trying to delete medic.' });
   }
-}
-
-async function actualizarMedico(req, res) {
-  try {
-    // Obtiene los datos del paciente del cuerpo de la solicitud
-    const datosMedico = req.body;
-
-    // Llama al servicio para guardar el paciente en la base de datos
-    const resultado = await medicsService.actualizarMedico(datosMedico);
-
-    // Verifica si se produjo un error al guardar el paciente
-    if (resultado.error) {
-      return res.status(resultado.status).json(resultado.error);
-    }
-
-    // Si se guardó correctamente, devuelve una respuesta exitosa
-    return res.status(200).json('Medico actualizado correctamente.');
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json('Error interno del servidor');
-  }
-}
-
-module.exports = {
-  listMedics,
-  guardarMedico,
-  actualizarMedico
 };
