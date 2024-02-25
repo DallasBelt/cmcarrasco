@@ -3,43 +3,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 let modalMode = '';
+let originalPatientData = {};
 
-// Submit form handler
-document.querySelector('#patient-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const patientData = {
-    primer_nombre: document.querySelector('#patient-first-name').value,
-    segundo_nombre: document.querySelector('#patient-middle-name').value,
-    primer_apellido: document.querySelector('#patient-last-name-1').value,
-    segundo_apellido: document.querySelector('#patient-last-name-2').value,
-    cedula: document.querySelector('#patient-id').value,
-    fecha_nacimiento: document.querySelector('#patient-dob').value,
-    estado_civil: document.querySelector("select[name='patient-marital-status']").value,
-    direccion: document.querySelector('#patient-address').value,
-    correo: document.querySelector('#patient-email').value,
-    telefono_movil: document.querySelector('#patient-phone').value
-  };
-
-  const dataChanged = Object.keys(patientData).some(key => patientData[key] !== originalPatientData[key]);
-  console.log(dataChanged)
-  console.log(patientData, originalPatientData)
-
-  if (modalMode === 'create') {
-    await createPatient(patientData);
-  } else if (modalMode === 'edit' && dataChanged) {
-    await updatePatient(patientData);
-  } else {
-    Swal.fire({
-      title: '¡No hay cambios que guardar!',
-      text: 'Debe realizar cambios antes de guardar la información. ',
-      icon: 'warning',
-      showConfirmButton: true
-    });
-  }
+// Initialize DataTables
+DataTable.intlOrder('es', {
+  sensitivity: 'base'
 });
 
-// Initialize DataTable
 const initDataTable = () => {
   $('#patient-table').DataTable({
     "columnDefs": [
@@ -54,19 +24,27 @@ const initDataTable = () => {
   });
 }
 
-// Loads the table and the data
+// Calculate the age of the patient based on their DOB
+const calcAge = patientDOB => {
+  const dob = new Date(patientDOB);
+  const currentDate = new Date();
+  const ageInMilliseconds = currentDate - dob;
+  const age = new Date(ageInMilliseconds);
+  return Math.abs(age.getUTCFullYear() - 1970);
+}
+
+// Load the patients' data into the DataTable
 const loadPatientsIntoTable = async () => {
   try {
     const response = await axios.get('http://localhost:3000/patients/read', {
       withCredentials: true
     });
     const data = response.data;
-
-    if (data) {
+    if (Object.keys(data).length > 0) {
       document.querySelector('#patient-table').style.display = 'table';
       const table = document.querySelector('#patient-table-data');
       while (table.firstChild) {
-          table.removeChild(table.firstChild);
+        table.removeChild(table.firstChild);
       }
       const fragment = document.createDocumentFragment();
 
@@ -92,13 +70,13 @@ const loadPatientsIntoTable = async () => {
           <td>
             <div>
               <button type='button' class='btn btn-primary btn-sm' id='edit-patient-btn' data-bs-toggle='modal' data-bs-target='#patient-modal' data-patient-id='${patientID}'>
-                  <i class='fa-solid fa-pen-to-square'></i>
+                <i class='fa-solid fa-pen-to-square'></i>
               </button>
               <button type='button' class='btn btn-primary btn-sm' id='new-appt-btn' data-bs-toggle='modal' data-bs-target='#create-appt-modal'>
-                  <i class='fa-solid fa-calendar-plus'></i>
+                <i class='fa-solid fa-calendar-plus'></i>
               </button>
               <button type='button' class='btn btn-danger btn-sm' id='del-patient-btn' data-user-id='${userID}'>
-                  <i class='fa-solid fa-trash'></i>
+                <i class='fa-solid fa-trash'></i>
               </button>
             </div>
           </td>
@@ -106,41 +84,70 @@ const loadPatientsIntoTable = async () => {
         fragment.appendChild(row);
       });
 
-        table.appendChild(fragment);
-        initDataTable();
-      } else {
-        document.querySelector('.alert').style.display = 'block';
-      }
+      table.appendChild(fragment);
+      initDataTable();
+    } else {
+      document.querySelector('.alert').style.display = 'block';
+    }
   } catch (error) {
       console.error('Error en la solicitud de pacientes:', error.message);
       document.querySelector('.alert').style.display = 'block';
   }
 };
-  
-// Calculate the age based on DOB
-const calcAge = dobString => {
-  const dob = new Date(dobString)
-  const currentDate = new Date()
-  const age = currentDate - dob
-  const ageMS = new Date(age)
-  return Math.abs(ageMS.getUTCFullYear() - 1970)
-}
 
+// Submit form handler
+document.querySelector('#patient-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  if (!validateForm()) {
+    return;
+  }
+
+  const patientData = {
+    primer_nombre: document.querySelector('#patient-first-name').value,
+    segundo_nombre: document.querySelector('#patient-middle-name').value,
+    primer_apellido: document.querySelector('#patient-last-name-1').value,
+    segundo_apellido: document.querySelector('#patient-last-name-2').value,
+    cedula: document.querySelector('#patient-id').value,
+    fecha_nacimiento: document.querySelector('#patient-dob').value,
+    estado_civil: document.querySelector("select[name='patient-marital-status']").value,
+    direccion: document.querySelector('#patient-address').value,
+    correo: document.querySelector('#patient-email').value,
+    telefono_movil: document.querySelector('#patient-phone').value
+  };
+  
+  const dataChanged = Object.keys(patientData).some(key => patientData[key] !== originalPatientData[key]);
+
+  if (modalMode === 'create') {
+    await createPatient(patientData);
+  } else if (modalMode === 'edit' && dataChanged) {
+    await updatePatient(patientData);
+  } else {
+    Swal.fire({
+      title: '¡No hay cambios que guardar!',
+      text: 'Debe realizar cambios antes de guardar la información. ',
+      icon: 'warning',
+      showConfirmButton: true
+    });
+  }
+});
+  
 // Request data based on patient ID to populate the fields
-let originalPatientData = {};
 const fillModal = async (patientID) => {
   try {
     const response = await axios.post('http://localhost:3000/patients/readById', {cedula: patientID }, {
       withCredentials: true
     });
     const data = response.data;
+
+    document.querySelector('#patient-header').innerHTML = `&nbsp; ${data.primer_nombre} ${data.segundo_nombre} ${data.primer_apellido} ${data.segundo_apellido}`
   
-    document.querySelector('#patient-id').value = data.cedula;
     document.querySelector('#patient-first-name').value = data.primer_nombre;
     document.querySelector('#patient-middle-name').value = data.segundo_nombre;
     document.querySelector('#patient-last-name-1').value = data.primer_apellido;
     document.querySelector('#patient-last-name-2').value = data.segundo_apellido;
-    const patientDOB = new Date(data.fecha_nacimiento).toISOString().split('T')[0];
+    document.querySelector('#patient-id').value = data.cedula;
+    const patientDOB = data.fecha_nacimiento.split('T')[0];
     document.querySelector('#patient-dob').value = patientDOB;
     document.querySelector("select[name='patient-marital-status']").value = data.estado_civil;
     document.querySelector('#patient-address').value = data.direccion;
@@ -149,21 +156,17 @@ const fillModal = async (patientID) => {
 
     // Save loaded data for later comparison
     originalPatientData = {
-      cedula: data.cedula,
       primer_nombre: data.primer_nombre,
       segundo_nombre: data.segundo_nombre,
       primer_apellido: data.primer_apellido,
       segundo_apellido: data.segundo_apellido,
-      fecha_nacimiento: new Date(data.fecha_nacimiento),
+      cedula: data.cedula,
+      fecha_nacimiento: data.fecha_nacimiento.split('T')[0],
       estado_civil: data.estado_civil,
       direccion: data.direccion,
       correo: data.correo,
       telefono_movil: data.telefono_movil,
       id_usuario: data.id_usuario
-    }
-    
-    if (originalPatientData.fecha_nacimiento instanceof Date) {
-      originalPatientData.fecha_nacimiento = originalPatientData.fecha_nacimiento.toISOString().split('T')[0];
     }
     
   } catch(error) {
@@ -174,25 +177,24 @@ const fillModal = async (patientID) => {
 const updatePatient = async (patientData) => {
   patientData.id_usuario = originalPatientData.id_usuario;
   patientData.changedEmail = patientData.correo !== originalPatientData.correo;
+
   try {
     const response = await axios.patch('http://localhost:3000/patients/update', patientData, {
       withCredentials: true
     });
 
     if (response.status === 200) {
-      console.log('¡Paciente actualizado de manera exitosa!');
+      $('#patient-table').DataTable().destroy();
+      $('#patient-table-data').innerHTML = '';
+      loadPatientsIntoTable();
+      fillModal(patientData.cedula)
       Swal.fire({
         title: '¡Paciente actualizado de manera exitosa!',
         text: 'Los datos del paciente han sido actualizados en la base de datos.',
         icon: 'success',
         showConfirmButton: true,
       });
-      // document.querySelector('#pt-form').reset();
-      $('#patient-table').DataTable().destroy();
-      $('#patient-table-data').empty();
-      loadPatientsIntoTable();
     } else {
-      console.error('¡Error en la actualización del paciente!');
       Swal.fire({
         title: '¡Error en la actualización del paciente!',
         text: 'Hubo un problema al intentar actualizar el paciente.',
@@ -201,7 +203,6 @@ const updatePatient = async (patientData) => {
       });
     }
   } catch (error) {
-    console.error('Error en la solicitud:', error.message);
     Swal.fire({
       title: '¡Error en la solicitud!',
       text: 'Hubo un problema con la solicitud de actualización.',
@@ -213,61 +214,67 @@ const updatePatient = async (patientData) => {
 
 // Button trigger to open modal in create mode
 document.querySelector('#new-patient-btn').addEventListener('click', () => {
-  handleModal();
+  modalMode = 'create';
+  document.querySelector('#patient-form').reset();
+  document.querySelector('#patient-form').classList.remove('was-validated');
+  document.querySelector('#PatientModalLabel').textContent = 'Crear nuevo paciente';
+  document.querySelector('#submit-patient-data').innerHTML = '<i class="fa-solid fa-user-plus me-1"></i>Crear paciente';
 });
 
 // Button trigger to open modal in edit mode and get the data from the attribute
 document.querySelector('#patient-table').addEventListener('click', (e) => {
+  modalMode = 'edit';
+  document.querySelector('#patient-form').reset();
+  document.querySelector('#patient-form').classList.remove('was-validated');
+  document.querySelector('#PatientModalLabel').textContent = 'Editar paciente:'
+  document.querySelector('#submit-patient-data').innerHTML = '<i class="fa-solid fa-floppy-disk me-1"></i>Guardar cambios';
+  
   const targetButton = e.target.closest('button');
   if (targetButton && targetButton.id === 'edit-patient-btn') {
     const patientID = targetButton.getAttribute('data-patient-id');
-    handleModal(patientID);
+    fillModal(patientID);
   }
 });
 
-// Clear modal fields when closing create mode
-const clearModal = () => {
-  document.querySelector('#PatientModalLabel').textContent = 'Crear nuevo paciente';
-  document.querySelector('#patient-form').reset();
-}
+const validateForm = () => {
+  const forms = document.querySelectorAll('.needs-validation');
 
-const handleModal = (patientID = null) => {
-  if (patientID) {
-    modalMode = 'edit';
-    fillModal(patientID);
-    document.querySelector('#PatientModalLabel').textContent = 'Editar paciente registrado';
-    document.querySelector('#new-save-btn').innerHTML = '<i class="fa-solid fa-floppy-disk me-1"></i>Guardar cambios';
-  } else {
-    modalMode = 'create';
-    clearModal();
-    document.querySelector('#PatientModalLabel').textContent = 'Registrar nuevo paciente';
-    document.querySelector('#new-save-btn').innerHTML = '<i class="fa-solid fa-user-plus me-1"></i>Crear paciente';
+  for (const form of forms) {
+    if (!form.checkValidity()) {
+      form.classList.add('was-validated');
+      Swal.fire({
+        title: '¡Error de validación!',    
+        text: 'Debe llenar correctamente todos los campos',                    
+        icon: 'error',
+        showConfirmButton: true,
+      });
+      return false;
+    }
   }
-};
 
+  return true;
+};
 
 // Create patient
 const createPatient = async (patientData) => {
-
   try {
     const response = await axios.post('http://localhost:3000/patients/create', patientData, {
       withCredentials: true
     });
     
     if (response.status === 200) {
-      console.log('¡Paciente creado de manera exitosa!');
+      document.querySelector('#patient-form').reset();
+      $('#patient-table').DataTable().destroy();
+      document.querySelector('#patient-table-data').innerHTML = '';
+      loadPatientsIntoTable();
+
       Swal.fire({
         title: '¡Paciente creado de manera exitosa!',    
         text: 'El paciente ha sido agregado a la base de datos.',                    
         icon: 'success',
         showConfirmButton: true,
       });
-      document.querySelector('#patient-form').reset();
-      $('#patient-table').DataTable().destroy();
-      $('#patient-table-data').empty();
-      loadPatientsIntoTable();
     } else {
-      console.error('¡Error en la creación del paciente!');
       Swal.fire({
         title: '¡Error en la creación del paciente!',    
         text: 'Hubo un problema al intentar crear el paciente.',                    
@@ -276,7 +283,6 @@ const createPatient = async (patientData) => {
       });
     }
   } catch (error) {
-    console.error('Error en la solicitud:', error.message);
     if (error.response && error.response.status === 400) {
       Swal.fire({
         title: '¡Error!',
@@ -297,31 +303,28 @@ const createPatient = async (patientData) => {
 
 // Button trigger to open deletion confirmation and get the data from the attribute
 document.querySelector('#patient-table').addEventListener('click', (e) => {
-  const targetButton = e.target.closest('button')
+  const targetButton = e.target.closest('button');
   if (targetButton && targetButton.id === 'del-patient-btn') {
     const userID = targetButton.getAttribute('data-user-id');
-    console.log(userID)
     Swal.fire({
       title: '¿Seguro desea eliminar el paciente?',
-      text: 'Esta acción no se puede deshacer.',
+      text: 'Esta acción no se puede deshacer',
       icon: 'warning',
       confirmButtonText: 'Sí, eliminar',
       showCancelButton: true,
       cancelButtonText: 'No, cancelar',
-      reverseButtons: true,
       focusCancel: true
     }).then((result) => {
       if (result.isConfirmed) {
-        deletePatient(userID)
+        deletePatient(userID);
       }
-    })
+    });
   }
-})
+});
 
 // Delete request to the server
 const deletePatient = async (userID) => {
   try {
-    console.log(userID)
     const response = await axios.delete('http://localhost:3000/patients/delete', {
       data: { id_usuario: userID },
       withCredentials: true
@@ -335,15 +338,16 @@ const deletePatient = async (userID) => {
         showConfirmButton: true
       });
     } else {
+      $('#patient-table').DataTable().destroy();
+      document.querySelector('#patient-table-data').innerHTML = '';
+      loadPatientsIntoTable();
+
       Swal.fire({
         title: 'Paciente eliminado correctamente',
         text: response.data.message,
         icon: 'success',
         showConfirmButton: true
       });
-      $('#patient-table').DataTable().destroy();
-      $('#patient-table-data').empty();
-      loadPatientsIntoTable();
     }
   } catch (error) {
     Swal.fire({
