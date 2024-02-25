@@ -2,6 +2,10 @@ document.addEventListener('DOMContentLoaded', () => {
   loadMedicsIntoTable();
 });
 
+let modalMode = '';
+let originalMedicData = {};
+let formSubmitted = false;
+
 // Initialize DataTable
 DataTable.intlOrder('es', {
   sensitivity: 'base'
@@ -28,7 +32,7 @@ const calcAge = medicDOB => {
   const ageInMilliseconds = currentDate - dob
   const age = new Date(ageInMilliseconds);
   return Math.abs(age.getUTCFullYear() - 1970);
-}
+};
 
 // Load the medics' data into the DataTable
 const loadMedicsIntoTable = async () => {
@@ -90,28 +94,51 @@ const loadMedicsIntoTable = async () => {
     }
 };
 
-let modalMode = '';
+const resetModal = () => {
+  document.querySelector('#medic-form').reset();
+  document.querySelector('#medic-form').classList.remove('was-validated');
+  document.querySelector('#medic-header').innerHTML = '';
+  
+  const inputs = document.querySelectorAll('#shifts-group input[type="text"]');
+  inputs.forEach(input => {
+    input.disabled = true;
+  });
+};
+
+const resetFeedbackMessages = () => {
+  document.querySelector('#specialties-placeholder').innerHTML = '';
+  document.querySelector('#days-placeholder').innerHTML = '';
+  document.querySelector('#shifts-placeholder').innerHTML = '';
+};
 
 // Button trigger to open modal in create mode
 document.querySelector('#new-medic-btn').addEventListener('click', () => {
   modalMode = 'create';
-  document.querySelector('#medic-form').reset();
+  formSubmitted = false;
   document.querySelector('#MedicModalLabel').textContent = 'Crear nuevo médico';
   document.querySelector('#submit-medic-data').innerHTML = '<i class="fa-solid fa-user-plus me-1"></i>Crear médico';
 
-  initializeFlatpickr(document.querySelector('.schedule'));
-  changeFlatpickrInputsState(document.querySelector('.schedule'));
+  resetModal();
+  resetFeedbackMessages();
+  initializeFlatpickr();
+  changeFlatpickrInputsState();
 });
 
 // Button trigger to open modal in edit mode
 document.querySelector('#medic-table').addEventListener('click', (e) => {
   modalMode = 'edit';
-  document.querySelector('#MedicModalLabel').textContent = 'Editar médico registrado';
+  formSubmitted = false;
+  document.querySelector('#MedicModalLabel').textContent = 'Editar médico:';
   document.querySelector('#submit-medic-data').innerHTML = '<i class="fa-solid fa-floppy-disk me-1"></i>Guardar cambios';
 
+  resetModal();
+  resetFeedbackMessages();
+  initializeFlatpickr();
+  changeFlatpickrInputsState();
+
   const targetButton = e.target.closest('button');
-  if (targetButton && targetButton.id === 'edit-patient-btn') {
-    const medicID = targetButton.getAttribute('data-patient-id');
+  if (targetButton && targetButton.id === 'edit-medic-btn') {
+    const medicID = targetButton.getAttribute('data-medic-id');
     fillModal(medicID);
   }
 });
@@ -235,22 +262,7 @@ const changeFlatpickrInputsState = () => {
 // Submit form handler
 document.querySelector('#medic-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-
-  // Event listener for the specialties group checkboxes states
-  const checkboxes = document.querySelectorAll('#specialties-group input[type="checkbox"]');
-  checkboxes.forEach(checkbox => {
-    checkbox.addEventListener('change', validateSpecialties);
-  });
-
-  // Event listener for the days and shifts groups' checkboxes states
-  ['days', 'shifts'].forEach(group => {
-    const checkboxes = document.querySelectorAll(`#${group}-group input[type="checkbox"]`);
-    checkboxes.forEach(checkbox => {
-      checkbox.addEventListener('change', () => {
-        validateSchedules(group);
-      });
-    });
-  });
+  formSubmitted = true;
 
   if (!validateForm()) {
     return;
@@ -272,10 +284,14 @@ document.querySelector('#medic-form').addEventListener('submit', async (e) => {
     selectedDays[checked.value] = true;
   });
 
-  const morningShiftCheckbox = document.querySelector('#morning-shift-checkbox');
-  if (morningShiftCheckbox.checked && !morningShiftCheckbox.disabled) {
+  // Create an object for the Medic Shifts based on the Flatpickr inputs
+  const shifts = {};
+
+  // Check if the morning shift checkbox is checked
+  if (document.getElementById('morning-checkbox').checked) {
     const morningShiftStart = document.querySelector('#morning-shift-start').value;
     const morningShiftEnd = document.querySelector('#morning-shift-end').value;
+
     if (morningShiftStart && morningShiftEnd) {
       shifts.morning = {
         start: morningShiftStart,
@@ -284,10 +300,11 @@ document.querySelector('#medic-form').addEventListener('submit', async (e) => {
     }
   }
 
-  const afternoonShiftCheckbox = document.querySelector('#afternoon-shift-checkbox');
-  if (afternoonShiftCheckbox.checked && !afternoonShiftCheckbox.disabled) {
+  // Check if the afternoon shift checkbox is checked
+  if (document.getElementById('afternoon-checkbox').checked) {
     const afternoonShiftStart = document.querySelector('#afternoon-shift-start').value;
     const afternoonShiftEnd = document.querySelector('#afternoon-shift-end').value;
+
     if (afternoonShiftStart && afternoonShiftEnd) {
       shifts.afternoon = {
         start: afternoonShiftStart,
@@ -296,27 +313,7 @@ document.querySelector('#medic-form').addEventListener('submit', async (e) => {
     }
   }
 
-  // Create an object for the Medic Shifts based on the Flatpickr inputs
-  // const morningShiftStart = document.querySelector('#morning-shift-start').value;
-  // const morningShiftEnd = document.querySelector('#morning-shift-end').value;
-  // const afternoonShiftStart = document.querySelector('#afternoon-shift-start').value;
-  // const afternoonShiftEnd = document.querySelector('#afternoon-shift-end').value;
-  // const shifts = {};
-  
-  // if (morningShiftStart && morningShiftEnd) {
-  //   shifts.morning = {
-  //     start: morningShiftStart,
-  //     end: morningShiftEnd
-  //   };
-  // }
-  
-  // if (afternoonShiftStart && afternoonShiftEnd) {
-  //   shifts.afternoon = {
-  //     start: afternoonShiftStart,
-  //     end: afternoonShiftEnd
-  //   };
-  // }
-
+  // Define de medicData object
   const medicData = {
     primer_nombre: document.querySelector('#medic-first-name').value,
     segundo_nombre: document.querySelector('#medic-middle-name').value,
@@ -333,13 +330,18 @@ document.querySelector('#medic-form').addEventListener('submit', async (e) => {
     shifts: shifts
   };
 
-  // const dataChanged = Object.keys(medicData).some(key => medicData[key] !== originalmedicData[key]);
+  const medicDataWithoutID = _.omit(medicData, 'id_usuario');
+  const originalMedicDataWithoutID = _.omit(originalMedicData, 'id_usuario');
+
+  const areObjectsEqual = _.isEqual(medicDataWithoutID, originalMedicDataWithoutID);
 
   if (modalMode === 'create') {
     await createMedic(medicData);
-  } else if (modalMode === 'edit' && dataChanged) {
+  } else if (modalMode === 'edit' && !areObjectsEqual) {
     await updateMedic(medicData);
   } else {
+    resetFeedbackMessages();
+    formSubmitted = false;
     Swal.fire({
       title: '¡No hay cambios que guardar!',
       text: 'Debe realizar cambios antes de guardar la información. ',
@@ -349,79 +351,157 @@ document.querySelector('#medic-form').addEventListener('submit', async (e) => {
   }
 });
 
+// Request data based on medic ID to populate the fields
+const fillModal = async (medicID) => {
+  try {
+    const response = await axios.post('http://localhost:3000/medics/readById', {cedula: medicID }, {
+      withCredentials: true
+    });
+    const data = response.data;
+
+    document.querySelector('#medic-header').innerHTML = `&nbsp; ${data.primer_nombre} ${data.segundo_nombre} ${data.primer_apellido} ${data.segundo_apellido}`
+  
+    document.querySelector('#medic-first-name').value = data.primer_nombre;
+    document.querySelector('#medic-middle-name').value = data.segundo_nombre;
+    document.querySelector('#medic-last-name-1').value = data.primer_apellido;
+    document.querySelector('#medic-last-name-2').value = data.segundo_apellido;
+    document.querySelector('#medic-id').value = data.cedula;
+    const medicDOB = data.fecha_nacimiento.split('T')[0];
+    document.querySelector('#medic-dob').value = medicDOB;
+    document.querySelector("select[name='medic-marital-status']").value = data.estado_civil;
+    document.querySelector('#medic-address').value = data.direccion;
+    document.querySelector('#medic-email').value = data.correo;
+    document.querySelector('#medic-phone').value = data.telefono_movil;
+
+    Object.entries(data.especialidad).forEach(([specialty, checked]) => {
+      const checkbox = document.querySelector(`#${specialty}`);
+      if (checkbox) {
+        checkbox.checked = checked;
+      }
+    });
+
+    Object.entries(data.schedule).forEach(([day, checked]) => {
+      const checkbox = document.querySelector(`#${day}`);
+      if (checkbox) {
+        checkbox.checked = checked;
+      }
+    });
+
+    Object.keys(data.shifts).forEach(shift => {
+      const shiftCheckbox = document.querySelector(`#${shift}-checkbox`);
+      const startTimeInput = document.querySelector(`#${shift}-shift-start`);
+      const endTimeInput = document.querySelector(`#${shift}-shift-end`);
+  
+      if (shiftCheckbox && startTimeInput && endTimeInput) {
+        shiftCheckbox.checked = true;
+        startTimeInput.disabled = false;
+        endTimeInput.disabled = false;
+  
+        flatpickr(startTimeInput, {
+          enableTime: true,
+          noCalendar: true,
+          dateFormat: "H:i",
+          defaultDate: data.shifts[shift].start
+        });
+  
+        flatpickr(endTimeInput, {
+          enableTime: true,
+          noCalendar: true,
+          dateFormat: "H:i",
+          defaultDate: data.shifts[shift].end
+        });
+      }
+    });
+
+    // Save loaded data for later comparison
+    originalMedicData = {
+      primer_nombre: data.primer_nombre,
+      segundo_nombre: data.segundo_nombre,
+      primer_apellido: data.primer_apellido,
+      segundo_apellido: data.segundo_apellido,
+      cedula: data.cedula,
+      fecha_nacimiento: data.fecha_nacimiento.split('T')[0],
+      estado_civil: data.estado_civil,
+      direccion: data.direccion,
+      correo: data.correo,
+      telefono_movil: data.telefono_movil,
+      especialidad: data.especialidad,
+      schedule: data.schedule,
+      shifts: data.shifts,
+      id_usuario: data.id_usuario
+    }
+
+  } catch(error) {
+      console.error('Error:', error.message);
+  }
+};
+
 // Validations
+const validateForm = () => {
+  const personalDataValid = validatePersonalData();
+  const specialtiesValid = validateCheckboxes('#specialties-group', '#specialties-placeholder');
+  const daysValid = validateCheckboxes('#days-group', '#days-placeholder');
+  const shiftsValid = validateCheckboxes('#shifts-group', '#shifts-placeholder');
+
+  if (!personalDataValid || !specialtiesValid || !daysValid || !shiftsValid) {
+    Swal.fire({
+      title: '¡Error de validación!',    
+      text: 'Debe llenar correctamente todos los campos',                    
+      icon: 'error',
+      showConfirmButton: true,
+    });
+    return false;
+  }
+ 
+  return true;
+};
 
 const validatePersonalData = () => {
-  let isValid = true;
-
   const forms = document.querySelectorAll('.needs-validation');
 
-  Array.from(forms).forEach(form => {
+  for (const form of forms) {
     if (!form.checkValidity()) {
-      isValid = false;
+      form.classList.add('was-validated');
+      return false;
     }
-    form.classList.add('was-validated');
-  });
-
-  return isValid;
-};
-
-const validateSpecialties = () => {
-  const checkboxes = document.querySelectorAll('#specialties-group input[type="checkbox"]');
-  const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
-
-  let specialtiesValidationMessage = document.querySelector('#specialties-validation-message');
-  if (!specialtiesValidationMessage) {
-    specialtiesValidationMessage = document.createElement('div');
-    specialtiesValidationMessage.id = 'specialties-validation-message';
-    document.querySelector('#specialties-message-placeholder').insertAdjacentElement('afterbegin', specialtiesValidationMessage);
   }
 
-  const validationPassed = isChecked;
-  specialtiesValidationMessage.innerHTML = `<span><i class='fa-solid ${isChecked ? 'fa-check' : 'fa-circle-exclamation'} me-2'></i>${isChecked ? 'Bien, ha seleccionado al menos una opción.' : 'Debe seleccionar al menos una opción'}</span>`;
-  specialtiesValidationMessage.classList.remove('valid-feedback', 'invalid-feedback');
-  specialtiesValidationMessage.classList.add(isChecked ? 'valid-feedback' : 'invalid-feedback');
-  specialtiesValidationMessage.style.display = 'inline';
-
-  return validationPassed;
+  return true;
 };
 
-const validateSchedules = (group) => {
-  const checkboxes = document.querySelectorAll(`#${group}-group input[type="checkbox"]`);
+const validateCheckboxes = (groupSelector, placeholderSelector) => {
+  const checkboxes = document.querySelectorAll(`${groupSelector} input[type='checkbox']`);
   const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+  const placeholder = document.querySelector(placeholderSelector);
 
-  let validationMessage = document.querySelector(`#${group}-validation-message`);
-  if (!validationMessage) {
-    validationMessage = document.createElement('div');
-    validationMessage.id = `${group}-validation-message`;
-    document.querySelector(`#${group}-message-placeholder`).insertAdjacentElement('afterbegin', validationMessage);
+  if (!isChecked) {
+    placeholder.innerHTML = `<span class='text-danger'><i class='fa-solid fa-circle-exclamation me-2'></i>Debe seleccionar al menos una opción</span>`;
+    return false;
+  } else {
+    placeholder.innerHTML = `<span class='text-success'><i class='fa-solid fa-check me-2'></i>Bien, ha seleccionado al menos una opción</span>`;
+    return true;
+  }
+};
+
+const updateValidationMessages = () => {
+  validateCheckboxes('#specialties-group', '#specialties-placeholder');
+  validateCheckboxes('#days-group', '#days-placeholder');
+  validateCheckboxes('#shifts-group', '#shifts-placeholder');
+};
+
+// Checkboxes state change listener
+document.addEventListener('change', (event) => {
+  if (!formSubmitted) {
+    return;
   }
 
-  const validationPassed = isChecked;
-  validationMessage.innerHTML = `<span><i class='fa-solid ${isChecked ? 'fa-check' : 'fa-circle-exclamation'} me-2'></i>${isChecked ? 'Bien, ha seleccionado al menos una opción.' : 'Debe seleccionar al menos una opción'}</span>`;
-  validationMessage.classList.remove('valid-feedback', 'invalid-feedback');
-  validationMessage.classList.add(isChecked ? 'valid-feedback' : 'invalid-feedback');
-  validationMessage.style.display = 'inline';
-
-  return validationPassed;
-};
-
-const validateForm = () => {
-
-  const personalDataValid = validatePersonalData();
-
-  const specialtiesValid = validateSpecialties();
-
-  let schedulesValid = true;
-  
-  ['days', 'shifts'].forEach(group => {
-    if (!validateSchedules(group)) {
-      schedulesValid = false;
-    }
-  });
-
-  return personalDataValid && specialtiesValid && schedulesValid;
-};
+  const target = event.target;
+  if (target.matches('#specialties-group input[type="checkbox"]') ||
+    target.matches('#days-group input[type="checkbox"]') ||
+    target.matches('#shifts-group input[type="checkbox"]')) {
+    updateValidationMessages();
+  }
+});
 
 // Create medic
 const createMedic = async (medicData) => {
@@ -433,16 +513,18 @@ const createMedic = async (medicData) => {
     });
     
     if (response.status === 200) {
+      resetModal();
+      resetFeedbackMessages();
+      initializeFlatpickr();
+      $('#medic-table').DataTable().destroy();
+      document.querySelector('#medic-table-data').innerHTML = '';
+      loadMedicsIntoTable();
       Swal.fire({
         title: '¡Médico creado de manera exitosa!',    
         text: 'El médico ha sido agregado a la base de datos.',                    
         icon: 'success',
         showConfirmButton: true,
       });
-      document.querySelector('#medic-form').reset();
-      $('#medic-table').DataTable().destroy();
-      document.querySelector('#medic-table-data').innerHTML = '';
-      loadMedicsIntoTable();
     } else {
       Swal.fire({
         title: '¡Error en la creación del médico!',    
@@ -468,5 +550,103 @@ const createMedic = async (medicData) => {
         showConfirmButton: true
       });
     }
+  }
+};
+
+// Update medic
+const updateMedic = async (medicData) => {
+  medicData.id_usuario = originalMedicData.id_usuario;
+  medicData.changedEmail = medicData.correo !== originalMedicData.correo;
+
+  try {
+    const response = await axios.patch('http://localhost:3000/medics/update', medicData, {
+      withCredentials: true
+    });
+
+    if (response.status === 200) {
+      resetFeedbackMessages();
+      fillModal(medicData.cedula)
+      $('#medic-table').DataTable().destroy();
+      $('#medic-table-data').innerHTML = '';
+      loadMedicsIntoTable();
+      Swal.fire({
+        title: 'Médico actualizado de manera exitosa!',
+        text: 'La base de datos ha sido actualizada.',
+        icon: 'success',
+        showConfirmButton: true,
+      });
+    } else {
+      Swal.fire({
+        title: '¡Error en la actualización del médico!',
+        text: 'Hubo un problema en el proceso.',
+        icon: 'error',
+        showConfirmButton: true
+      });
+    }
+  } catch (error) {
+    Swal.fire({
+      title: '¡Error en la solicitud!',
+      text: 'Hubo un problema en la solicitud.',
+      icon: 'error',
+      showConfirmButton: true
+    });
+  }
+};
+
+// Button trigger to open deletion confirmation and get the data from the attribute
+document.querySelector('#medic-table').addEventListener('click', (e) => {
+  const targetButton = e.target.closest('button');
+  if (targetButton && targetButton.id === 'del-medic-btn') {
+    const userID = targetButton.getAttribute('data-user-id');
+    Swal.fire({
+      title: '¿Seguro desea eliminar el médico?',
+      text: 'Esta acción no se puede deshacer',
+      icon: 'warning',
+      confirmButtonText: 'Sí, eliminar',
+      showCancelButton: true,
+      cancelButtonText: 'No, cancelar',
+      focusCancel: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteMedic(userID);
+      }
+    });
+  }
+});
+
+// Delete medic
+const deleteMedic = async (userID) => {
+  try {
+    const response = await axios.delete('http://localhost:3000/medics/delete', {
+      data: { id_usuario: userID },
+      withCredentials: true
+    });
+
+    if (response.status === 400 || response.status === 404) {
+      Swal.fire({
+        title: 'Error en la eliminación',
+        text: 'Error: ' + response.data.message,
+        icon: 'error',
+        showConfirmButton: true
+      });
+    } else {
+      $('#medic-table').DataTable().destroy();
+      document.querySelector('#medic-table-data').innerHTML = '';
+      loadMedicsIntoTable();
+
+      Swal.fire({
+        title: 'Médico eliminado correctamente',
+        text: response.data.message,
+        icon: 'success',
+        showConfirmButton: true
+      });
+    }
+  } catch (error) {
+    Swal.fire({
+      title: 'Error en la eliminación',
+      text: 'Error: ' + error.message,
+      icon: 'error',
+      showConfirmButton: true
+    });
   }
 };

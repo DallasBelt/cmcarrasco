@@ -76,6 +76,7 @@
         <div class='modal-content'>
           <div class='modal-header'>
             <h1 class='modal-title fs-5' id='MedicModalLabel'></h1>
+            <span id='medic-header' class='text-primary'></span>
             <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
           </div>
           <div class='modal-body'>
@@ -141,58 +142,58 @@
                   <legend>Datos Profesionales</legend>
                   <div class='px-3'>
                     <p class='required mb-2'>Especialidades</p>
-                    <div id='specialties-message-placeholder' class='mb-2'></div>
+                    <div id='specialties-placeholder' class='mb-2'></div>
                     <div id='specialties-group'>
                       <div class='row g-2 mb-2'>
                         <div class='col-sm-12 col-lg-6 col-xl-2'>
-                          <input type='checkbox' class='btn-check' id='general' name='medic-specialties' value='General' autocomplete='off'>
-                          <label class='btn btn-outline-primary w-100' for='general'>General</label>
-                        </div>
-                      
-                        <div class='col-sm-12 col-lg-6 col-xl-2'>
-                          <input type='checkbox' class='btn-check' id='dentistry' name='medic-specialties' value='Odontología' autocomplete='off'>
-                          <label class='btn btn-outline-primary w-100' for='dentistry'>Odontología</label>
-                        </div>
-                      
-                        <div class='col-sm-12 col-lg-6 col-xl-2'>
-                          <input type='checkbox' class='btn-check' id='accupuncture' name='medic-specialties' value='Acupuntura' autocomplete='off'>
+                          <input type='checkbox' class='btn-check' id='accupuncture' name='medic-specialties' value='accupuncture' autocomplete='off'>
                           <label class='btn btn-outline-primary w-100' for='accupuncture'>Acupuntura</label>
                         </div>
-                      
+
                         <div class='col-sm-12 col-lg-6 col-xl-2'>
-                          <input type='checkbox' class='btn-check' id='dermatology' name='medic-specialties' value='Dermatología' autocomplete='off'>
+                          <input type='checkbox' class='btn-check' id='surgery' name='medic-specialties' value='surgery' autocomplete='off'>
+                          <label class='btn btn-outline-primary w-100' for='surgery'>Cirugía</label>
+                        </div>
+
+                        <div class='col-sm-12 col-lg-6 col-xl-2'>
+                          <input type='checkbox' class='btn-check' id='cosmiatry' name='medic-specialties' value='cosmiatry' autocomplete='off'>
+                          <label class='btn btn-outline-primary w-100' for='cosmiatry'>Cosmiatría</label>
+                        </div>
+
+                        <div class='col-sm-12 col-lg-6 col-xl-2'>
+                          <input type='checkbox' class='btn-check' id='dermatology' name='medic-specialties' value='dermatology' autocomplete='off'>
                           <label class='btn btn-outline-primary w-100' for='dermatology'>Dermatología</label>
                         </div>
-  
+
                         <div class='col-sm-12 col-lg-6 col-xl-2'>
-                          <input type='checkbox' class='btn-check' id='nutrition' name='medic-specialties' value='Nutrición' autocomplete='off'>
-                          <label class='btn btn-outline-primary w-100' for='nutrition'>Nutrición</label>
+                          <input type='checkbox' class='btn-check' id='endodontics' name='medic-specialties' value='endodontics' autocomplete='off'>
+                          <label class='btn btn-outline-primary w-100' for='endodontics'>Endodoncia</label>
                         </div>
-  
+
                         <div class='col-sm-12 col-lg-6 col-xl-2'>
-                          <input type='checkbox' class='btn-check' id='cosmiatry' name='medic-specialties' value='Cosmiatría' autocomplete='off'>
-                          <label class='btn btn-outline-primary w-100' for='cosmiatry'>Cosmiatría</label>
+                          <input type='checkbox' class='btn-check' id='physiotherapy' name='medic-specialties' value='physiotherapy' autocomplete='off'>
+                          <label class='btn btn-outline-primary w-100' for='physiotherapy'>Fisioterapia</label>
                         </div>
                       </div>
   
                       <div class='row g-2 mb-4'>
                         <div class='col-sm-12 col-lg-6 col-xl-2'>
-                          <input type='checkbox' class='btn-check' id='surgery' name='medic-specialties' value='Cirugía' autocomplete='off'>
-                          <label class='btn btn-outline-primary w-100' for='surgery'>Cirugía</label>
+                          <input type='checkbox' class='btn-check' id='general' name='medic-specialties' value='general' autocomplete='off'>
+                          <label class='btn btn-outline-primary w-100' for='general'>General</label>
                         </div>
-                        
+                       
                         <div class='col-sm-12 col-lg-6 col-xl-2'>
-                          <input type='checkbox' class='btn-check' id='physiotherapy' name='medic-specialties' value='Fisioterapia' autocomplete='off'>
-                          <label class='btn btn-outline-primary w-100' for='physiotherapy'>Fisioterapia</label>
+                          <input type='checkbox' class='btn-check' id='nutrition' name='medic-specialties' value='nutrition' autocomplete='off'>
+                          <label class='btn btn-outline-primary w-100' for='nutrition'>Nutrición</label>
                         </div>
-  
+
                         <div class='col-sm-12 col-lg-6 col-xl-2'>
-                          <input type='checkbox' class='btn-check' id='endodontics' name='medic-specialties' value='Endodoncia' autocomplete='off'>
-                          <label class='btn btn-outline-primary w-100' for='endodontics'>Endodoncia</label>
+                          <input type='checkbox' class='btn-check' id='dentistry' name='medic-specialties' value='dentistry' autocomplete='off'>
+                          <label class='btn btn-outline-primary w-100' for='dentistry'>Odontología</label>
                         </div>
-  
+                       
                         <div class='col-sm-12 col-lg-6 col-xl-2'>
-                          <input type='checkbox' class='btn-check' id='orthodontics' name='medic-specialties' value='Ortodoncia' autocomplete='off'>
+                          <input type='checkbox' class='btn-check' id='orthodontics' name='medic-specialties' value='orthodontics' autocomplete='off'>
                           <label class='btn btn-outline-primary w-100' for='orthodontics'>Ortodoncia</label>
                         </div>
                       </div>
@@ -201,12 +202,7 @@
                     <p class='required mb-2'>Horarios de atención</p>
                     <div class='schedules-container'>
                       <div class='p-3 mb-3 bg-light rounded'>
-                        <div class='row g-2 mb-2'>
-                          <div class='col-sm-12 text-center'>
-                            <span>Horario</span>
-                          </div>
-                        </div>
-                        <div class='row g-2'>
+                        <div class='row g-5'>
                           <div class='col-sm-12 col-lg-6'>
                             <div class='row'>
                               <div class='col-12 text-center'>
@@ -215,36 +211,36 @@
                             </div>
                             <div class='row g-2'>
                               <div class='col-12 text-center'>
-                                <div id='days-message-placeholder' class='message-placeholder'></div>
+                                <div id='days-placeholder'></div>
                               </div>
                             </div>
                             
                             <div id='days-group'>
                               <div class='row p-1 g-2'>
                                 <div class='col-sm-12 col-xl-4'>
-                                  <input type='checkbox' class='btn-check' id='monday' name='medic-schedule' value='Lunes'>
+                                  <input type='checkbox' class='btn-check' id='monday' name='medic-schedule' value='monday'>
                                   <label class='btn btn-outline-primary w-100' for='monday'>Lunes</label>
                                 </div>
                                 <div class='col-sm-12 col-xl-4'>
-                                  <input type='checkbox' class='btn-check' id='tuesday' name='medic-schedule' value='Martes'>
+                                  <input type='checkbox' class='btn-check' id='tuesday' name='medic-schedule' value='tuesday'>
                                   <label class='btn btn-outline-primary w-100' for='tuesday'>Martes</label>
                                 </div>
                                 <div class='col-sm-12 col-xl-4'>
-                                  <input type='checkbox' class='btn-check' id='wednesday' name='medic-schedule' value='Miércoles'>
+                                  <input type='checkbox' class='btn-check' id='wednesday' name='medic-schedule' value='wednesday'>
                                   <label class='btn btn-outline-primary w-100' for='wednesday'>Miércoles</label>
                                 </div>
                               </div>
                               <div class='row p-1 g-2'>
                                 <div class='col-sm-12 col-xl-4'>
-                                  <input type='checkbox' class='btn-check' id='thursday' name='medic-schedule' value='Jueves'>
+                                  <input type='checkbox' class='btn-check' id='thursday' name='medic-schedule' value='thursday'>
                                   <label class='btn btn-outline-primary w-100' for='thursday'>Jueves</label>
                                 </div>
                                 <div class='col-sm-12 col-xl-4'>
-                                  <input type='checkbox' class='btn-check' id='friday' name='medic-schedule' value='Viernes'>
+                                  <input type='checkbox' class='btn-check' id='friday' name='medic-schedule' value='friday'>
                                   <label class='btn btn-outline-primary w-100' for='friday'>Viernes</label>
                                 </div>
                                 <div class='col-sm-12 col-xl-4'>
-                                  <input type='checkbox' class='btn-check' id='saturday' name='medic-schedule' value='Sábado'>
+                                  <input type='checkbox' class='btn-check' id='saturday' name='medic-schedule' value='saturday'>
                                   <label class='btn btn-outline-primary w-100' for='saturday'>Sábado</label>
                                 </div>
                               </div>
@@ -258,7 +254,7 @@
                             </div>
                             <div class='row g-2'>
                               <div class='col-12 text-center'>
-                                <div id='shifts-message-placeholder' class='message-placeholder'></div>
+                                <div id='shifts-placeholder'></div>
                               </div>
                             </div>
                             <div id='shifts-group'>
@@ -349,7 +345,8 @@
   <script src='https://cdn.datatables.net/plug-ins/1.13.7/sorting/intl.js'></script>
   <script src='https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js'></script>
   <script src='https://cdn.jsdelivr.net/npm/flatpickr'></script>
-  <script src="https://unpkg.com/validator@latest/validator.min.js"></script>
+  <script src='https://unpkg.com/validator@latest/validator.min.js'></script>
+  <script src='https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js'></script>
   <script src='../../javascript/displayUsername.js'></script>
   <script src='../../javascript/logout.js'></script>
   <script src='../../javascript/admin/medics.js'></script>

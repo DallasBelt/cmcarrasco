@@ -1,3 +1,5 @@
-#del-schedule-btn-1 {
-  visibility: hidden;
+#specialties-placeholder,
+#days-placeholder,
+#shifts-placeholder {
+  font-size: 14px;
 }
